@@ -1,5 +1,5 @@
 {
-  "name": "basic-electrical-science-exp-2",
+  "name": "basic-electrical-science-exp-7",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
+    "framer-motion": "^12.39.0",
     "jsplumb": "^2.15.6",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

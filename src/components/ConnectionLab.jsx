@@ -19,6 +19,8 @@ const ConnectionLab = ({
   checkRequest,
   onCheckConnections,
   powerOn,
+  isVerified,
+  setIsVerified,
   r1,
   r2,
   r3,
@@ -27,16 +29,37 @@ const ConnectionLab = ({
   setPowerOn,
   setVoltage,
   voltage,
+  selected,
+  setSelected,
+  connections,
+  setConnections,
+  variacOn,
+  setVariacOn,
+  switchOn,
+  setSwitchOn
 }) => {
   const containerRef = useRef(null)
   const instanceRef = useRef(null)
   const onCheckConnectionsRef = useRef(onCheckConnections)
+
+  const selectedRef = useRef(selected)
 
   const [isLocked, setIsLocked] = useState(false)
 
   useEffect(() => {
     onCheckConnectionsRef.current = onCheckConnections
   }, [onCheckConnections])
+
+  useEffect(() => {
+    selectedRef.current = selected
+
+    setPowerOn(false)
+
+    if (setIsVerified) {
+      setIsVerified(false)
+    }
+  }, [selected])
+
 
   useEffect(() => {
     let cancelled = false
@@ -58,7 +81,7 @@ const ConnectionLab = ({
         Container: containerRef.current,
         ConnectionsDetachable: true,
         ReattachConnections: true,
-        Connector: ['Bezier', { curviness: 55 }],
+        Connector: ['Bezier', { curviness: 20 }],
         PaintStyle: {
           ...wirePaintStyles.positive,
         },
@@ -87,6 +110,28 @@ const ConnectionLab = ({
             ...wireHoverPaintStyles.negative,
           },
         },
+      })
+
+      const validLoads = ['CFL', 'Lamp', 'LED', 'Tubelight'];
+
+      instance.bind('beforeDrag', (params) => {
+        if (!validLoads.includes(selectedRef.current)) {
+          alert("Please choose a load for the experiment first!")
+          return false
+        }
+        return true
+      })
+      instance.bind('beforeDrop', (info) => {
+        if (!validLoads.includes(selectedRef.current)) {
+          return false
+        }
+        return true
+      })
+
+      instance.bind('connection', (info) => {
+        if (!validLoads.includes(selectedRef.current)) {
+          instance.deleteConnection(info.connection);
+        }
       })
 
       instance.setSuspendDrawing(true)
@@ -170,7 +215,7 @@ const ConnectionLab = ({
     instanceRef.current.repaintEverything?.()
   }
 
-  return (
+ return (
     <div className="connection-lab" onClick={handleLabelClick} ref={containerRef}>
       <EquipmentPanel
         powerOn={powerOn}
@@ -178,9 +223,31 @@ const ConnectionLab = ({
         setPowerOn={setPowerOn}
         setVoltage={setVoltage}
         voltage={voltage}
+        selected={selected}
+        setSelected={setSelected}
+        connections={connections}
+        setConnections={setConnections}
+        isVerified={isVerified}
+        switchOn={switchOn} 
       />
 
-      <CircuitDiagram r1={r1} r2={r2} r3={r3} />
+      <CircuitDiagram
+        r1={r1}
+        r2={r2}
+        r3={r3}
+        selected={selected}
+        setSelected={setSelected}
+        connections={connections}
+        setConnections={setConnections}
+        voltage={voltage}
+        setVoltage={setVoltage}
+        mcbOn={powerOn}
+        isVerified={isVerified}
+        variacOn={variacOn}
+        setVariacOn={setVariacOn}
+        switchOn={switchOn}
+        setSwitchOn={setSwitchOn}
+      />
     </div>
   )
 }

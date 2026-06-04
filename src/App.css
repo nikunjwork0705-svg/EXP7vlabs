@@ -101,7 +101,7 @@
 
 .header-board h1 {
   margin: 0;
-  font-size: 34px;
+  font-size: 24.5px;
   font-weight: 900;
   line-height: 1;
   text-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
@@ -147,75 +147,80 @@
   height: 8px;
 }
 
-.instructions-drawer {
+.instructions-overlay {
   position: absolute;
-  top: 95px;
+  top: 0;
+  right: 0;
+  bottom: 0;
   left: 0;
-  z-index: 100;
-  display: flex;
-  transform: translateX(-320px); 
-  transition: transform 0.3s ease-in-out;
-}
-
-.instructions-drawer:hover {
-  transform: translateX(0);
-}
-
-.instructions-content {
-  width: 320px;
-  background: #e5e5e5;
-  border-radius: 0 0 8px 0;
-  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.3);
-  border-right: 2px solid #9ca3af;
-  border-bottom: 2px solid #9ca3af;
+  z-index: 50;
   display: flex;
   flex-direction: column;
-  color: #000;
-  padding-bottom: 16px;
+  background-color: #e5e5e5;
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  border: 2px solid #9ca3af;
+  overflow: hidden;
 }
 
 .instructions-header {
-  background: #b3b3b3;
-  color: #000;
+  background-color: #b3b3b3;
+  padding: 8px 0;
   text-align: center;
-  padding: 4px 0;
-  margin: 12px 12px 0;
   font-weight: bold;
-  font-size: 18px;
-  border-radius: 6px 6px 0 0;
-  border: 1px solid #9ca3af;
+  font-size: 20px;
+  border-bottom: 1px solid #9ca3af;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.instructions-close {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+  color: #374151; /* Dark gray */
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.instructions-close:hover {
+  color: #dc2626; /* Red on hover */
 }
 
 .instructions-body {
-  padding: 16px;
-  text-align: justify;
-  font-size: 16.5px;
-  line-height: 1.3;
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  color: #000;
 }
 
-.instructions-body ul {
-  padding-left: 20px;
+.instructions-list {
   margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 17px;
+  text-align: justify;
+}
+.instructions-step {
+  margin-top: 12px;
 }
 
-.instructions-body > ul {
-  list-style-type: disc;
-}
 
-.instructions-body .sub-list {
-  list-style-type: none;
-  padding-left: 8px;
-  margin-top: 8px;
+.instructions-sub-list {
+  padding-left: 16px;
+  margin-top: 4px;
+  list-style: none;
   font-weight: 500;
-  font-size: 16.5px;
-}
-
-.instructions-body .sub-list li {
-  margin-bottom: 4px;
+  font-size: 17px;
 }
 
 .instructions-note {
-  margin-top: 16px;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -229,44 +234,8 @@
 
 .instructions-note-text {
   font-weight: bold;
-  font-size: 16.5px;
   margin: 0;
-}
-
-.instructions-handle {
-  position: relative;
-  display: flex;
-  width: 54px;
-  height: 176px;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  border: 2px solid rgba(252, 223, 176, 0.82);
-  border-left: 0;
-  border-radius: 0 10px 10px 0;
-  color: #fff8ed;
-  background: linear-gradient(180deg, #6b381b, #2d1b13);
-  box-shadow: 0 4px 10px rgba(56, 29, 11, 0.46);
-  cursor: pointer;
-}
-
-.instructions-handle svg {
-  position: absolute;
-  top: 14px;
-  width: 27px;
-  height: 27px;
-  transform: rotate(-90deg);
-}
-
-.instructions-handle span {
-  margin-top: 32px;
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: 0;
-  line-height: 1;
-  text-shadow: 0 2px 2px rgba(0, 0, 0, 0.42);
-  transform: rotate(-90deg);
-  white-space: nowrap;
+  font-size: 17px;
 }
 
 .section-card {
@@ -344,6 +313,7 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  text-align: center;
   gap: 2px;
   padding: 4px 6px 3px;
   border: 2px solid rgba(81, 45, 22, 0.42);
@@ -364,8 +334,25 @@
   filter: brightness(1.07);
 }
 
+.action-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.18) brightness(0.82);
+  opacity: 0.58;
+  transform: none;
+}
+
+.action-button:disabled:hover,
+.action-button:disabled:active {
+  filter: grayscale(0.18) brightness(0.82);
+  transform: none;
+}
+
 .action-button:active {
   transform: translateY(2px);
+}
+
+.action-button:disabled:active {
+  transform: none;
 }
 
 .action-button svg {
@@ -418,10 +405,11 @@
   background: linear-gradient(180deg, grey, grey);
 }
 
-/* .action-button--yellow {
-  font-size: 11px;
-  background: linear-gradient(180deg, yellow, yellow);
-} */
+.action-button--yellow {
+  font-size: 10.5px;
+  background: linear-gradient(180deg, orange, orange);
+  text-align: center;
+} 
 
 .observation-table-wrap {
   position: relative;
@@ -446,8 +434,9 @@
   height: 39px;
   color: #fff;
   background: linear-gradient(180deg, #7b461f, #4a2a15);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 900;
+  padding: 0 4px;
 }
 
 .observation-table td {
@@ -470,13 +459,9 @@
 }
 .equipment-panel {
   position: relative;
-  display: flex;
+  display: block;
   width: 845px;
-  height: 260px;
-  align-items: center;
-  justify-content: space-evenly; 
-  gap: 12px;
-  padding: 18px 24px;
+  height: 840px;
   overflow: hidden;
   isolation: isolate;
   border: 2px solid rgba(255, 252, 244, 0.9);
@@ -497,26 +482,30 @@
 }
 
 .equipment-item {
-  position: relative;
+  position: absolute; 
   width: 172px;
   height: 232px;
-  flex: 0 0 172px; 
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0; 
 }
 
-.equipment-item > * {
+.equipment-item > article,
+.equipment-item > div {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 .equipment-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  display: block;
+  margin: 0;
+  transform-origin: center center;
 }
 
 .equipment-panel::before {
@@ -545,7 +534,7 @@
 
 .mcb {
   position: relative;
-  width: 100%;
+  width: 10%;
   height: 100%;
 }
 
@@ -648,16 +637,6 @@
   --ammeter-image-scale: 1.1;
 }
 
-.ammeter--A2 {
-  --ammeter-image-scale: 1;
-  --ammeter-image-top: 2px;
-  --ammeter-needle-top: 111px;
-}
-
-.ammeter--A3 {
-  --ammeter-image-scale: 1.08;
-}
-
 .ammeter__needle {
   position: absolute;
   top: var(--ammeter-needle-top);
@@ -678,14 +657,6 @@
   height: auto;
   transform: translateY(-50%);
 }
-
-.ammeter__label {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-weight: bold;
-}
 .wattmeter__needle {
   position: absolute;
   top: var(--ammeter-needle-top);
@@ -696,7 +667,7 @@
   transform-origin: 0 50%;
   transition: transform 280ms ease;
 }
-/* .ammeter__value {
+.ammeter__value {
   position: absolute;
   top: -7px;
   left: 50%;
@@ -709,13 +680,12 @@
   font-weight: 900;
   text-align: center;
   transform: translateX(-50%);
-} */
-
+}
 
 .circuit-panel {
   position: relative;
   width: 845px;
-  height: 560px; /* 🔹 FIX: Changed from 4500px! */
+  height: 560px;
   overflow: hidden;
   border: 2px solid rgba(116, 91, 69, 0.82);
   border-radius: 17px;
@@ -772,41 +742,6 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
 }
 
-.status-bar {
-  position: absolute;
-  top: 804px;
-  left: 520px;
-  z-index: 4;
-  display: flex;
-  width: 594px;
-  height: 50px;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  border: 1px solid rgba(255, 219, 160, 0.82);
-  border-radius: 14px;
-  color: #fff7e9;
-  background: linear-gradient(180deg, rgba(116, 68, 31, 0.94), rgba(54, 31, 17, 0.94));
-  box-shadow:
-    inset 0 1px 5px rgba(255, 228, 175, 0.24),
-    0 3px 8px rgba(38, 20, 10, 0.42);
-  font-size: 18px;
-  text-shadow: 0 2px 1px rgba(0, 0, 0, 0.54);
-}
-
-.status-bar svg {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 auto;
-  color: #f6e4bd;
-}
-
-.status-bar span {
-  max-width: 500px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-} */
 
 button:focus-visible,
 input:focus-visible {
@@ -955,7 +890,7 @@ input:focus-visible {
 }
 
 .terminal-number-label--power-plus {
-  top: 177px;
+  top: 977px;
   left: 64px;
 }
 
@@ -984,54 +919,6 @@ input:focus-visible {
     radial-gradient(circle at 34% 28%, #ffc0b9 0 13%, #ef3d32 14% 52%, #aa120d 100%);
 }
 
-.connection-terminal--mcb-plus {
-  top: 172px;
-  left: 110px;
-}
-.terminal-number-label--mcb-plus {
-  top: 186px ;
-  left: 138px ;
-}
-
-.connection-terminal--mcb-minus {
-  top: 172px ;
-  left: 45px ;
-}
-.terminal-number-label--mcb-minus {
-  top: 186px ;
-  left: 70px ;
-}
-
-/*Voltmeter*/
-.connection-terminal--voltmeter-plus { top: 175px; left: 52px; }
-.terminal-number-label--voltmeter-plus { top: 190px; left: 75px; }
-
-.connection-terminal--voltmeter-minus { top: 176px; left: 105px; }
-.terminal-number-label--voltmeter-minus { top: 190px; left: 128px; }
-
-/*Ammeter*/
-.connection-terminal--ammeter-plus { top: 170px; left: 40px; }
-.terminal-number-label--ammeter-plus { top: 184px; left: 62px; }
-
-.connection-terminal--ammeter-minus { top: 170px; left: 105px; }
-.terminal-number-label--ammeter-minus { top: 184px; left: 129px; }
-
-/*Wattmeter*/
-.connection-terminal--wattmeter-7 { top: 175px; left: 34px; }
-.terminal-number-label--wattmeter-7 { top: 192px; left: 49px; }
-
-.connection-terminal--wattmeter-8 { top: 175px; left: 65px; }
-.terminal-number-label--wattmeter-8 { top: 192px; left: 81px; }
-
-.connection-terminal--wattmeter-9 { top: 175px; left: 97px; }
-.terminal-number-label--wattmeter-9 { top: 192px; left: 115px; }
-
-.connection-terminal--wattmeter-10 { top: 175px; left: 130px; }
-.terminal-number-label--wattmeter-10 { top: 192px; left: 144px; }
-.terminal-label {
-  z-index: 40;
-}
-
 .voltmeter__needle {
   position: absolute;
   top: 112.5px; 
@@ -1053,21 +940,18 @@ input:focus-visible {
   transform: translateY(-50%);
 }
 .equipment-item {
-  position: relative;
-  width: 172px ;
-  height: 232px ;
-  flex: 0 0 172px ; 
-  display: flex;
+  position: absolute; /* <--- CHANGED THIS: This frees them from the invisible column */
+  width: 172px;
+  height: 232px;
+  display: flex;      /* <--- CHANGED THIS: Restored flex so the images stay centered */
   justify-content: center;
   align-items: center;
-  margin: 0 ;
-  overflow: hidden ; 
 }
 
 .equipment-item > article,
 .equipment-item > div {
-  width: 100% ;
-  height: 100% ;
+  width: 100%;
+  height: 100%;
   position: relative;
 }
 
@@ -1075,25 +959,159 @@ input:focus-visible {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100% ;
-  height: 100% ;
-  object-fit: contain ;
-  margin: 0 ;
-  transform-origin: center center ;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: 0;
+  transform-origin: center center;
+}
+/* =========================================
+   SAFE 2D POSITIONS (Top, Left)
+   These guarantee the items are inside the 840x845 box
+========================================= */
+
+/* 1. MCB (Top Left) */
+.equipment-item:nth-child(1) { top: 40px; left: 10px; }
+.equipment-item:nth-child(1) img { transform: scaleX(0.8) scaleY(0.87); }
+
+/* 2. V1 (Top Row) */
+.equipment-item:nth-child(2) { top: 40px; left: 160px; }
+.equipment-item:nth-child(2) img { transform: scaleX(1.1) scaleY(0.87); }
+
+/* 3. A1 (Top Row) */
+.equipment-item:nth-child(3) { top: 40px; left: 320px; }
+.equipment-item:nth-child(3) img { transform: scale(1.2) scaleY(1); }
+
+/* 4. W1 (Top Row) */
+.equipment-item:nth-child(4) { top: 40px; left: 480px; }
+.equipment-item:nth-child(4) img { transform: scaleX(1) scaleY(0.87); }
+
+/* 5. A2 (Top Row) */
+.equipment-item:nth-child(5) { top: 40px; left: 650px; }
+.equipment-item:nth-child(5) img { transform: scaleX(1.2) scaleY(1.2); }
+
+/* 6. A3 (Middle Right) */
+.equipment-item:nth-child(6) { top: 310px; left: 650px; }
+.equipment-item:nth-child(6) img { transform: scaleX(1.2) scaleY(1.2); }
+
+/* 7. A4 (Bottom Right) */
+.equipment-item:nth-child(7) { top: 580px; left: 650px; }
+.equipment-item:nth-child(7) img { transform: scaleX(1.2) scaleY(1.2); }
+
+/* 8. Resistor (Center) */
+.equipment-item:nth-child(8) { top: 380px; left: 320px; width: 200px; height: 100px; }
+.equipment-item:nth-child(8) img { transform: scale(1); }
+
+/* 9. Capacitor (Bottom Middle-Left) */
+.equipment-item:nth-child(9) { top: 600px; left: 300px; width: 100px; height: 150px; }
+.equipment-item:nth-child(9) img { transform: scale(1); }
+
+/* 10. Inductor (Bottom Middle-Right) */
+.equipment-item:nth-child(10) { top: 600px; left: 450px; width: 120px; height: 120px; }
+.equipment-item:nth-child(10) img { transform: scale(1); }
+
+/* 11. Variac (Bottom Left) */
+.equipment-item:nth-child(11) { top: 560px; left: 20px; width: 250px; height: 250px; }
+.equipment-item:nth-child(11) img { transform: scale(1); }
+
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(49, 137, 255, 0.75);
+  outline-offset: 3px;
 }
 
-.equipment-item:nth-child(1) img {
-  transform: scale(0.9) ; 
+.voltmeter__needle,
+.ammeter__needle,
+.wattmeter__needle {
+  position: absolute;
+  /* top and width are now controlled by React! */
+  left: 50%;
+  z-index: 3;
+  transform-origin: 0 50%;
+  transition: transform 280ms ease;
 }
 
-.equipment-item:nth-child(2) img {
-  transform: scale(0.9) ; 
+.voltmeter__needle-image,
+.ammeter__needle-image,
+.wattmeter__needle-image {
+  width: 100% !important; /* Forces image to match React wrapper width */
+  height: auto !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: -12px !important;
+  transform: translateY(-50%) !important;
+  object-fit: contain !important;
 }
 
-.equipment-item:nth-child(3) img {
-  transform: scale(1.45) ; 
+.formula-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, #faf7f0 0%, #eae2d1 100%);
+  border: 1px solid #c2b8a3;
+  border-bottom: 3px solid #aba089;
+  border-radius: 10px;
+  color: #41291d;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.04), inset 0 1px 0 #ffffff;
+  transition: all 0.15s ease;
 }
 
-.equipment-item:nth-child(4) img {
-  transform: scale(0.9) ; 
+.formula-btn:hover {
+  background: #eae2d1;
+  border-color: #aba089;
+}
+
+.formula-modal {
+  position: absolute;
+  top: 0;
+  left: 105%;
+  width: 380px;
+  background: #f6ebd0;
+  border: 1px solid #dcd6c8;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), inset 0 2px 0 #ffffff;
+  padding: 24px;
+  z-index: 999;
+  font-family: "Times New Roman", Times, serif;
+  color: #41291d;
+  box-sizing: border-box;
+}
+
+.formula-modal__grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  row-gap: 22px;
+  column-gap: 16px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.formula-modal__grid--values {
+  grid-template-columns: 1fr 1.1fr;
+  font-style: normal;
+}
+
+.formula-modal__fraction {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  font-size: 17px;
+}
+
+.formula-modal__fraction-top {
+  border-bottom: 1px solid #41291d;
+  padding: 0 4px;
+  line-height: 1.1;
+}
+
+.formula-modal__fraction-bottom {
+  line-height: 1.1;
+  padding-top: 2px;
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 const CalculationsBoard = ({ className = '', calculateRequest = 0, latestObservation }) => {
+
   const [deviceName, setDeviceName] = useState('')
   const [variac, setVariac] = useState('')
   const [ammeter, setAmmeter] = useState('')
@@ -8,6 +9,7 @@ const CalculationsBoard = ({ className = '', calculateRequest = 0, latestObserva
   const [wattmeter, setWattmeter] = useState('')
   const [calcPower, setCalcPower] = useState('')
   const [calcResult, setCalcResult] = useState('')
+
   const [finalDevice, setFinalDevice] = useState('')
   const [finalPf, setFinalPf] = useState('')
 
@@ -16,6 +18,7 @@ const CalculationsBoard = ({ className = '', calculateRequest = 0, latestObserva
       const v = latestObservation.voltage || 0
       const a = latestObservation.i1 || 0
       const w = latestObservation.i2 || 0
+      const loadName = latestObservation.load || ''
 
       setVariac(v.toString())
       setVoltmeter(v.toString())
@@ -26,178 +29,143 @@ const CalculationsBoard = ({ className = '', calculateRequest = 0, latestObserva
         const vi = v * a
         const pf = w / vi
 
-        setCalcPower(w.toFixed(4))
-        setCalcResult(pf.toFixed(4)) 
-        
-        setFinalDevice(deviceName)
-        setFinalPf(pf.toFixed(4))
+        setCalcPower(w.toFixed(2))
+        setCalcResult(pf.toFixed(2))
+        setDeviceName(loadName)
       } else {
         alert("The latest observation has 0 Volts, 0 Amps or 0 Watts. Please check your circuit connections!")
       }
     }
-  }, [calculateRequest, latestObservation, deviceName])
+  }, [calculateRequest, latestObservation])
 
   const handleVerify = () => {
-    // Convert both strings to numbers so 0.5 matches 0.5000
     const calculatedValue = parseFloat(calcResult)
     const enteredValue = parseFloat(finalPf)
 
-    // Check if they are valid numbers and if they match
-    if (!isNaN(calculatedValue) && !isNaN(enteredValue) && calculatedValue === enteredValue) {
-      alert('Verification complete! Values match.')
-    } else {
-      alert('Not verified, Values do not match, Please check the Calculations')
+    if (!finalDevice || finalDevice.trim() === '') {
+      alert('Please enter the Device Name to verify.')
+      return
     }
-  }
+    if (isNaN(enteredValue)) {
+      alert('Please enter a valid Power Factor number to verify.')
+      return
+    }
+    const isDeviceCorrect = finalDevice.trim().toLowerCase() === deviceName.trim().toLowerCase()
 
-  // Synchronizes all the voltage boxes
-  const handleVoltageChange = (value) => {
-    setVariac(value)
-    setVoltmeter(value)
-  }
+    const isExactMatch = calculatedValue === enteredValue
+    const isRoundedMatch2 = calculatedValue.toFixed(2) === enteredValue.toFixed(2)
+    const isRoundedMatch3 = calculatedValue.toFixed(3) === enteredValue.toFixed(3)
+    const isPfCorrect = isExactMatch || isRoundedMatch2 || isRoundedMatch3
 
-  // Synchronizes the Wattmeter and the Power Factor Numerator
-  const handleWattageChange = (value) => {
-    setWattmeter(value)
-    setCalcPower(value)
+    if (isDeviceCorrect && isPfCorrect) {
+      alert('Verification complete! Both Device Name and Power Factor are correct.')
+    } else if (!isDeviceCorrect && isPfCorrect) {
+      alert('Almost there! The Power Factor is correct, but the Device Name is incorrect.')
+    } else if (isDeviceCorrect && !isPfCorrect) {
+      alert('The Device Name is correct, but the Power Factor does not match the calculations.')
+    } else {
+      alert('Not verified. Both the Device Name and Power Factor are incorrect.')
+    }
   }
 
   return (
     <section className={`bg-white rounded-lg shadow-md overflow-hidden mt-8 ${className}`}>
-      
-      <header className="calculations-board bg-[#1a1a1a] text-white flex justify-center items-center gap-[36px] py-3 relative">
-        <span className="header-board__ornament" style={{ width: '500px' }} />
-        <h1 
-          className="m-0 tracking-wider" 
+
+     <header className="calculations-board bg-[#1a1a1a] text-white flex justify-center items-center gap-[36px] py-3 relative">
+        <span className="header-board__ornament" style={{ width: '420px' }} />
+        <h1
+          className="m-0 tracking-wider"
           style={{ fontSize: '34px', fontWeight: 900, textShadow: '0 3px 0 rgba(0, 0, 0, 0.45)' }}
         >
-          Calculations
+          Theoretical Calculations
         </h1>
-        <span className="header-board__ornament header-board__ornament--right" style={{ width: '500px' }} />
+        <span className="header-board__ornament header-board__ornament--right" style={{ width: '420px' }} />
       </header>
 
-      <div className="p-8 space-y-8 text-lg font-bold text-gray-800">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <label>Device Name :</label>
-            <input 
-              type="text" 
-              className="border border-gray-300 rounded px-2 py-1 w-48 font-normal" 
-              value={deviceName} 
-              onChange={e => setDeviceName(e.target.value)} 
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <label>Variac Reading :</label>
-            <input 
-              type="text" 
-              className="border border-gray-300 rounded px-2 py-1 w-32 font-normal outline-none" 
-              value={variac} 
-              onChange={e => handleVoltageChange(e.target.value)} 
-            />
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-xl mb-4">OBSERVATIONS :</h3>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <label className="w-32">Ammeter :</label>
-              <input 
-                type="text" 
-                className="border border-gray-300 rounded px-2 py-1 w-24 font-normal outline-none" 
-                value={ammeter} 
-                onChange={e => setAmmeter(e.target.value)} 
-              /> A
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="w-32">Voltmeter :</label>
-              <input 
-                type="text" 
-                className="border border-gray-300 rounded px-2 py-1 w-24 font-normal outline-none" 
-                value={voltmeter} 
-                onChange={e => handleVoltageChange(e.target.value)} 
-              /> V
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="w-32">Wattmeter :</label>
-              <input 
-                type="text" 
-                className="border border-gray-300 rounded px-2 py-1 w-24 font-normal outline-none" 
-                value={wattmeter} 
-                onChange={e => handleWattageChange(e.target.value)} 
-              /> W
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6 pt-4">
-          <div>Power Factor = Watts/(Voltage*Current)</div>
+      <div id="calculations-board" className="p-12 text-xl font-bold text-[#111]">
+        <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl">
           
-          <div className="flex items-center gap-4">
-            <span>Power Factor =</span>
-            <div className="flex flex-col items-center">
-              {/* Numerator: Watts */}
-              <input 
-                type="text" 
-                className="border border-gray-300 rounded px-2 py-1 w-24 text-center font-normal outline-none" 
-                value={calcPower} 
-                onChange={e => handleWattageChange(e.target.value)} 
-              />
-              
-              <div className="w-full h-[2px] bg-black my-1"></div>
-              
-              {/* Denominator: Voltage x Current */}
-              <div className="flex items-center gap-2">
-                <input 
-                  type="text" 
-                  className="border border-gray-300 rounded px-2 py-1 w-24 text-center font-normal outline-none" 
-                  value={voltmeter} 
-                  onChange={e => handleVoltageChange(e.target.value)} 
-                />
-                <span>×</span>
-                <input 
-                  type="text" 
-                  className="border border-gray-300 rounded px-2 py-1 w-24 text-center font-normal outline-none" 
-                  value={ammeter} 
-                  onChange={e => setAmmeter(e.target.value)} 
-                />
-              </div>
+          {/* left column */}
+          <div className="space-y-8">
+            <div className="flex items-center">
+              <span className="w-10">R</span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">Ω</span>
             </div>
-            <span>=</span>
-            <input 
-              type="text" 
-              className="border border-gray-300 rounded px-2 py-1 w-24 font-normal outline-none" 
-              value={calcResult} 
-              onChange={e => setCalcResult(e.target.value)} 
-            />
+            
+            <div className="flex items-center">
+              <span className="w-10">X<sub>L</sub></span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">Ω</span>
+            </div>
+            
+            <div className="flex items-center">
+              <span className="w-10">X<sub>C</sub></span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">Ω</span>
+            </div>
+            
+            <div className="flex items-center">
+              <span className="w-10">L</span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">mH</span>
+            </div>
+            
+            <div className="flex items-center">
+              <span className="w-10">C</span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">μF</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span>Power Factor (Cosθ) of</span>
-            <input 
-              type="text" 
-              className="border border-gray-300 rounded px-2 py-1 w-32 font-normal outline-none" 
-              value={finalDevice} 
-              onChange={e => setFinalDevice(e.target.value)} 
-            />
-            <span>is :</span>
-            <input 
-              type="text" 
-              className="border border-gray-300 rounded px-2 py-1 w-24 font-normal outline-none" 
-              value={finalPf}  
-              onChange={e => setFinalPf(e.target.value)} 
-            />
-            <button 
-              onClick={handleVerify}
-              className="ml-4 px-4 py-1 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 active:bg-gray-100 text-sm font-normal cursor-pointer"
-            >
-              Verify
-            </button>
+          {/* right column*/}
+          <div className="space-y-8">
+            <div className="flex items-center">
+              <span className="w-14">Z</span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">Ω</span>
+            </div>
+            
+            <div className="flex items-center">
+              <span className="w-14">cosΦ</span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+            </div>
+            
+            <div className="flex items-center">
+              <span className="w-14">S</span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">kVA</span>
+            </div>
+            
+            <div className="flex items-center">
+              <span className="w-14">Q</span> 
+              <span className="mx-3">=</span> 
+              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
+              <span className="ml-3">kVAr</span>
+            </div>
+            
+            <div className="flex items-center pt-2">
+              <button 
+                onClick={handleVerify}
+                className="bg-[#d1d5db] text-gray-600 px-6 py-2 rounded-xl text-lg font-normal tracking-wide hover:bg-gray-300 transition-colors"
+              >
+                VERIFY
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     </section>
   )
 }
+
 export default CalculationsBoard

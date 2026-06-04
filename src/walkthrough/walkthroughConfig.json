@@ -1,0 +1,276 @@
+{
+  "experimentName": "Study and Measurement of the Power Factor of an Electrical Load",
+  "defaultLocale": "en",
+  "locales": [
+    "en"
+  ],
+  "audio": {
+    "autoplay": false
+  },
+  "steps": [
+    {
+      "id": 1,
+      "target": "#experiment-title-board",
+      "title": {
+        "en": "Experiment Goal"
+      },
+      "description": {
+        "en": "This board states the lab's objective. The walkthrough follows the same order students use to find Power Factor of various Electrical Loads."
+      },
+      "audio": "#",
+      "placement": "bottom"
+    },
+    {
+      "id": 2,
+      "target": "#action-buttons-panel",
+      "title": {
+        "en": "Lab Actions"
+      },
+      "description": {
+        "en": "Use these controls to check wiring, record readings, reset the setup, print results, auto-connect the circuit, take an AI-Guide or to calculate the Power Factor."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 3,
+      "target": "#instruction-button",
+      "title": {
+        "en": "Instructions Button"
+      },
+      "description": {
+        "en": "Click here to read the intructions manual for performing the experiment."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 4,
+      "target": "#ai-guide-button",
+      "title": {
+        "en": "AI Guide Button"
+      },
+      "description": {
+        "en": ""
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 5,
+      "target": "#check-button",
+      "title": {
+        "en": "Check Button"
+      },
+      "description": {
+        "en": "Click this to verify the wiring is correct before turning on the power."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 6,
+      "target": "#auto-connect-button",
+      "title": {
+        "en": "Auto Connect Button"
+      },
+      "description": {
+        "en": "This button will automatically wire the circuit for the selected load."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 7,
+      "target": "#add-button",
+      "title": {
+        "en": "Add Button"
+      },
+      "description": {
+        "en": "Records the current meter readings directly into the Observation Table."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 8,
+      "target": "#calculate-button",
+      "title": {
+        "en": "Calculate Button"
+      },
+      "description": {
+        "en": "Computes the final Power Factor."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 9,
+      "target": "#reset-button",
+      "title": {
+        "en": "Reset Button"
+      },
+      "description": {
+        "en": "Clears all wires, turns off all power, and resets the simulation to its default state."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 10,
+      "target": "#print-button",
+      "title": {
+        "en": "Print Button"
+      },
+      "description": {
+        "en": "Prints the whole page."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 11,
+      "target": "#control-panel",
+      "title": {
+        "en": "Formulas Panel"
+      },
+      "description": {
+        "en": "To Calculate the Power Factor use the formula given in this Panel."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 12,
+      "target": "#mcb-supply",
+      "title": {
+        "en": "MCB"
+      },
+      "description": {
+        "en": "The main power switch. Turn this on only after your circuit passes the CHECK step."
+      },
+      "audio": "#",
+      "placement": "left"
+    },
+    {
+      "id": 13,
+      "target": "#ac-voltage-v",
+      "title": {
+        "en": "Voltmeter"
+      },
+      "description": {
+        "en": "Displays the active AC voltage currently being supplied to the circuit."
+      },
+      "audio": "#",
+      "placement": "bottom"
+    },
+    {
+      "id": 14,
+      "target": "#ac-ammeter-a",
+      "title": {
+        "en": "Ammeter"
+      },
+      "description": {
+        "en": "Measures the main current being drawn by the selected electrical load."
+      },
+      "audio": "#",
+      "placement": "bottom"
+    },
+    {
+      "id": 15,
+      "target": "#ac-wattmeter-w",
+      "title": {
+        "en": "Wattmeter"
+      },
+      "description": {
+        "en": "Measures the true power consumed by the circuit."
+      },
+      "audio": "#",
+      "placement": "bottom"
+    },
+    {
+      "id": 16,
+      "target": "#observation-table-panel",
+      "title": {
+        "en": "Observation Table"
+      },
+      "description": {
+        "en": "Each added reading appears in this table. Record readings for different loads to compare their power factors."
+      },
+      "audio": "#",
+      "placement": "right"
+    },
+    {
+      "id": 17,
+      "target": "#equipments",
+      "title": {
+        "en": "Circuit Equipment"
+      },
+      "description": {
+        "en": "This area contains the interactive components required to complete the physical circuit."
+      },
+      "audio": "#",
+      "placement": "top"
+    },
+    {
+      "id": 18,
+      "target": "#variac-button",
+      "title": {
+        "en": "Variac"
+      },
+      "description": {
+        "en": "An autotransformer used to safely step the voltage up to 230V for the experiment."
+      },
+      "audio": "#",
+      "placement": "top"
+    },
+    {
+      "id": 19,
+      "target": "#fuse",
+      "title": {
+        "en": "Fuse"
+      },
+      "description": {
+        "en": "Protects the circuit from overcurrent. Must be wired in series with the main supply."
+      },
+      "audio": "#",
+      "placement": "top"
+    },
+    {
+      "id": 20,
+      "target": "#switch",
+      "title": {
+        "en": "Switch"
+      },
+      "description": {
+        "en": "The final control switch. Turn this on after setting the Variac to allow current to flow to the load."
+      },
+      "audio": "#",
+      "placement": "top"
+    },
+    {
+      "id": 21,
+      "target": "#load",
+      "title": {
+        "en": "Load Box"
+      },
+      "description": {
+        "en": "Click here to swap between different electrical loads (CFL, Lamp, LED, Tubelight) to test."
+      },
+      "audio": "#",
+      "placement": "top"
+    },
+    {
+      "id": 22,
+      "target": "#calculations-board",
+      "title": {
+        "en": "Calculation Board"
+      },
+      "description": {
+        "en": "All the final power factor calculations and derived results can be found in this board."
+      },
+      "audio": "#",
+      "placement": "top"
+    }
+  ]
+}

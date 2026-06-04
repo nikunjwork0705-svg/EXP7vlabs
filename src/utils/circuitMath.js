@@ -1,14 +1,44 @@
-export const calculateReadings = ({ voltage, r1, r2, r3 }) => {
-  const parallel = (r2 * r3) / (r2 + r3)
-  const totalResistance = r1 + parallel
-  const i1 = totalResistance > 0 ? voltage / totalResistance : 0
-  const branchVoltage = i1 * parallel
-  const i2 = r2 > 0 ? branchVoltage / r2 : 0
-  const i3 = r3 > 0 ? branchVoltage / r3 : 0
+export const calculateReadings = ({ voltage, powerOn, selected }) => {
+  // If power is off, voltage is 0, or no load is selected, meters read 0
+  if (!powerOn || voltage === 0 || !selected) {
+    return { i1: 0, i2: 0 };
+  }
+
+  let basePower = 0; // True Power in Watts
+  let pf = 1;        // Power Factor
+
+  switch (selected) {
+    case 'CFL':
+      basePower = 24; 
+      pf = 0.8843; 
+      break;
+    case 'Lamp':
+      basePower = 59.8; 
+      pf = 0.9630; 
+      break;
+    case 'LED':
+      basePower = 8; 
+      pf = 0.7729; 
+      break;
+    case 'Tubelight':
+      basePower = 52.8; 
+      pf = 0.7064;
+      break;
+    default:
+      return { i1: 0, i2: 0 };
+  }
+
+  // Calculate how the Variac's voltage changes the current and power
+  const voltageRatio = voltage / 230;
+  
+  const truePower = basePower * (voltageRatio * voltageRatio); // Power scales quadratically
+  const apparentPowerBase = basePower / pf;
+  const currentBase = apparentPowerBase / 230;
+  
+  const current = currentBase * voltageRatio; // Current scales linearly
 
   return {
-    i1,
-    i2,
-    i3,
-  }
+    i1: Number(current.toFixed(3)),  // i1 is Amps (Current)
+    i2: Number(truePower.toFixed(2)) // i2 is Watts (True Power)
+  };
 }
