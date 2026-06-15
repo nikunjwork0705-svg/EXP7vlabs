@@ -411,39 +411,57 @@
 .observation-table-wrap {
   position: relative;
   z-index: 1;
-  height: 292px;
-  margin: 25px 17px 0;
-  overflow: hidden;
+   margin: 8px auto 14px;  /* small top spacing */
+  width: calc(100% - 34px);
+
+  /* ❌ remove flex */
+  /* display: flex; */
+  /* justify-content: center; */
+  /* align-items: center; */
+
   border: 1px solid rgba(96, 61, 35, 0.34);
   border-radius: 8px;
   background: rgba(255, 247, 236, 0.78);
 }
 
+/* ✅ TABLE */
 .observation-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  /* ❌ REMOVE fixed layout */
+  /* table-layout: fixed; */
   color: #3d2416;
   font-size: 16px;
 }
 
+/* ✅ EQUAL COLUMN WIDTH + CENTER ALIGN */
+.observation-table th,
+.observation-table td {
+  width: calc(100% / 7);   /* 7 columns */
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ✅ HEADER */
 .observation-table th {
   height: 39px;
   color: #fff;
   background: linear-gradient(180deg, #7b461f, #4a2a15);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
-  padding: 0 4px;
+  padding: 6px 4px;
+  line-height: 1.2;
 }
 
+/* ✅ BODY */
 .observation-table td {
-  height: 41px;
+  padding: 10px 6px;
   color: #2d1b11;
   font-weight: 700;
-  text-align: center;
   background: rgba(255, 250, 243, 0.56);
 }
 
+/* ✅ BORDERS */
 .observation-table th,
 .observation-table td {
   border-right: 1px solid rgba(91, 58, 35, 0.22);
@@ -924,7 +942,6 @@ input:focus-visible {
   transform-origin: center center;
 }
 
-/* 1. MCB (Top Left) */
 .equipment-item:nth-child(1) {
   top: 39px;
   left: -10px;
@@ -934,7 +951,6 @@ input:focus-visible {
   transform: scaleX(0.8) scaleY(0.87);
 }
 
-/* 2. V1 (Top Row) */
 .equipment-item:nth-child(2) {
   top: 38px;
   left: 132px;
@@ -944,7 +960,6 @@ input:focus-visible {
   transform: scaleX(1.2) scaleY(0.89);
 }
 
-/* 3. A1 (Top Row) */
 .equipment-item:nth-child(3) {
   top: 40px;
   left: 305px;
@@ -954,7 +969,6 @@ input:focus-visible {
   transform: scaleX(1.4) scaleY(1.4);
 }
 
-/* 4. W1 (Top Row) */
 .equipment-item:nth-child(4) {
   top: 40px;
   left: 477px;
@@ -964,7 +978,6 @@ input:focus-visible {
   transform: scaleX(1) scaleY(0.9);
 }
 
-/* 5. A2 (Top Row) */
 .equipment-item:nth-child(5) {
   top: 40px;
   left: 653px;
@@ -974,7 +987,7 @@ input:focus-visible {
   transform: scaleX(1.4) scaleY(1.4);
 }
 
-/* 6. A3 (Middle Right) */
+
 .equipment-item:nth-child(6) {
   top: 310px;
   left: 653px;
@@ -984,7 +997,7 @@ input:focus-visible {
   transform: scaleX(1.4) scaleY(1.4);
 }
 
-/* 7. A4 (Bottom Right) */
+
 .equipment-item:nth-child(7) {
   top: 570px;
   left: 653px;
@@ -994,7 +1007,6 @@ input:focus-visible {
   transform: scaleX(1.4) scaleY(1.4);
 }
 
-/* 8. Resistor (Center) */
 .equipment-item:nth-child(8) {
   top: 265px;
   left: 320px;
@@ -1006,7 +1018,6 @@ input:focus-visible {
   transform: scale(1);
 }
 
-/* 9. Capacitor (Bottom Middle-Left) */
 .equipment-item:nth-child(9) {
   top: 496px;
   left: 245px;
@@ -1018,7 +1029,6 @@ input:focus-visible {
   transform: scale(1);
 }
 
-/* 10. Inductor (Bottom Middle-Right) */
 .equipment-item:nth-child(10) {
   top: 518px;
   left: 400px;
@@ -1030,7 +1040,6 @@ input:focus-visible {
   transform: scale(1);
 }
 
-/* 11. Variac (Bottom Left) */
 .equipment-item:nth-child(11) {
   top: 340px;
   left: 4px;
@@ -1205,36 +1214,26 @@ input:focus-visible {
   z-index: 100;
 }
 
-/* =========================================
-   CALCULATIONS BOARD STYLES
-========================================= */
-
-/* 1. THE OUTER BOX (Cream background) */
 .calc-board-container {
   position: relative;
   width: 100%;
   background-color: #fdfaf4;
-  /* Cream background */
   border-radius: 12px;
   border: 1px solid #e1d7cc;
-  /* Outer border */
   box-shadow: 0 4px 10px rgba(60, 32, 10, 0.08);
   margin-top: 32px;
   padding: 24px 32px;
-  /* Adds padding around the inside so the header has space */
   box-sizing: border-box;
   transform: translateZ(0);
   backface-visibility: hidden;
   will-change: transform, opacity
 }
 
-/* HEADER STYLES (Sits on the cream background) */
 .calc-board-header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-bottom: 20px;
-  /* Space between header and the inner white box */
 }
 
 .calc-board-eyebrow {
@@ -1258,7 +1257,6 @@ input:focus-visible {
   display: none;
 }
 
-/* 2. THE INNER BOX (White background for inputs and button) */
 .calc-board-body {
   background-color: #ffffff;
   border: 1px solid #e1d7cc;
@@ -1311,7 +1309,6 @@ input:focus-visible {
   color: #000000;
 }
 
-/* VERIFY BUTTON STYLES */
 .calc-button-wrapper {
   display: flex;
   justify-content: flex-start;
@@ -1335,7 +1332,6 @@ input:focus-visible {
   background: #4a332a;
 }
 
-/* 👇 OVERLAY POSITION UPDATES 👇 */
 .inductor-component__label {
   color: #000000;
   font-family: 'Arial Black', sans-serif;

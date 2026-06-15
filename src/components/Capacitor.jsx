@@ -9,6 +9,10 @@ const Capacitor = () => {
         alt="Capacitor" 
         className="w-full h-full object-contain" 
       />
+      <div
+        id="capacitor-walkthrough-target"
+        style={{ position: 'absolute', top: '5%', left: '33%', width: '30%', height: '93%', pointerEvents: 'none' }}
+      />
     </article>
   )
 }

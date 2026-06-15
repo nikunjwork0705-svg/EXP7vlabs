@@ -116,6 +116,22 @@ const Variac = ({ voltage = 0, setVoltage, mcbOn, isVerified, selected, variacOn
         title={variacOn ? (voltage === 24 ? "Voltage is locked at 24V" : "Click to set to 24V") : "Variac is OFF"}
         aria-label="Set Variac Voltage"
       />
+
+      {/* THE INVISIBLE TARGET BOX 
+        Tweak top, left, width, and height to manually crop the highlight box! 
+      */}
+      <div
+        id="variac-walkthrough-target"
+        style={{
+          position: 'absolute',
+          top: '5%',       /* Adjust to move top edge up/down */
+          left: '5%',      /* Adjust to move left edge left/right */
+          width: '90%',    /* Squeeze or expand overall width */
+          height: '95%',   /* Squeeze or expand overall height */
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      />
     </div>
   )
 }

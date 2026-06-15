@@ -6,7 +6,7 @@ const ControlPanel = ({
   locked,
   observations,
   onShowCorrectedValues,
-  wrongAttempts = 0 
+  wrongAttempts = 0
 }) => {
   const [showFormulaModal, setShowFormulaModal] = useState(false);
   const [showValuesModal, setShowValuesModal] = useState(false);
@@ -15,35 +15,38 @@ const ControlPanel = ({
 
   return (
     <div className="flex flex-col gap-6 relative">
-      
-      <SectionCard className="h-[212px]" icon="sliders" title="FORMULAS">
-        <div className="flex flex-col gap-[14px] px-[26px] pt-[20px]" id="control-panel">
-          
-          <button
-            className="formula-btn"
-            onMouseEnter={() => setShowFormulaModal(true)}
-            onMouseLeave={() => setShowFormulaModal(false)}
-            onClick={() => setShowFormulaModal(!showFormulaModal)}
-          >
-            Formula Used
-          </button>
 
-          <button
-            className={`formula-btn transition-opacity ${!isUnlocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100'}`}
-            onClick={() => {
-              if (isUnlocked) {
-                setShowValuesModal(!showValuesModal);
-                if (onShowCorrectedValues) onShowCorrectedValues();
-              } else {
-                alert(`Corrected Values will unlock after ${2 - wrongAttempts} incorrect calculation attempt(s).`);
-              }
-            }}
-          >
-            Corrected Values {isUnlocked ? (showValuesModal ? ' ' : ' ') : ' '}
-          </button>
+      {/* THIS IS THE FIX: We wrap the SectionCard in a div with the ID */}
+      <div id="control-panel">
+        <SectionCard className="h-[212px]" icon="sliders" title="FORMULAS">
+          <div className="flex flex-col gap-[14px] px-[26px] pt-[20px]">
 
-        </div>
-      </SectionCard>
+            <button
+              className="formula-btn"
+              onMouseEnter={() => setShowFormulaModal(true)}
+              onMouseLeave={() => setShowFormulaModal(false)}
+              onClick={() => setShowFormulaModal(!showFormulaModal)}
+            >
+              Formula Used
+            </button>
+
+            <button
+              className={`formula-btn transition-opacity ${!isUnlocked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100'}`}
+              onClick={() => {
+                if (isUnlocked) {
+                  setShowValuesModal(!showValuesModal);
+                  if (onShowCorrectedValues) onShowCorrectedValues();
+                } else {
+                  alert(`Corrected Values will unlock after ${2 - wrongAttempts} incorrect calculation attempt(s).`);
+                }
+              }}
+            >
+              Corrected Values {isUnlocked ? (showValuesModal ? ' ' : ' ') : ' '}
+            </button>
+
+          </div>
+        </SectionCard>
+      </div>
 
       <ObservationTable observations={observations} />
 
@@ -54,7 +57,7 @@ const ControlPanel = ({
             {/* Row 1 */}
             <div className="flex items-center">
               <span className="inline-flex items-center gap-1">
-                <span className="italic">R</span> = 
+                <span className="italic">R</span> =
                 <div className="formula-modal__fraction">
                   <span className="formula-modal__fraction-top italic">V</span>
                   <span className="formula-modal__fraction-bottom italic">I<sub>R</sub></span>
@@ -62,7 +65,7 @@ const ControlPanel = ({
               </span>
             </div>
             <span className="inline-flex items-center gap-1">
-              <span className="italic">Z</span> = 
+              <span className="italic">Z</span> =
               <div className="formula-modal__fraction">
                 <span className="formula-modal__fraction-top px-8">1</span>
                 <span className="formula-modal__fraction-bottom pt-1 flex items-center">
@@ -92,7 +95,7 @@ const ControlPanel = ({
             {/* Row 2 */}
             <div className="flex items-center">
               <span className="inline-flex items-center gap-1">
-                <span className="italic">X<sub>L</sub></span> = 
+                <span className="italic">X<sub>L</sub></span> =
                 <div className="formula-modal__fraction">
                   <span className="formula-modal__fraction-top italic">V</span>
                   <span className="formula-modal__fraction-bottom italic">I<sub>L</sub></span>
@@ -101,7 +104,7 @@ const ControlPanel = ({
             </div>
             <div className="flex items-center">
               <span className="inline-flex items-center gap-1">
-                cos<span>(𝜙)</span> = 
+                cos<span>(𝜙)</span> =
                 <div className="formula-modal__fraction">
                   <span className="formula-modal__fraction-top italic">Z</span>
                   <span className="formula-modal__fraction-bottom italic">R</span>
@@ -112,7 +115,7 @@ const ControlPanel = ({
             {/* Row 3 */}
             <div className="flex items-center">
               <span className="inline-flex items-center gap-1">
-                <span className="italic">X<sub>C</sub></span> = 
+                <span className="italic">X<sub>C</sub></span> =
                 <div className="formula-modal__fraction">
                   <span className="formula-modal__fraction-top italic">V</span>
                   <span className="formula-modal__fraction-bottom italic">I<sub>C</sub></span>
@@ -126,7 +129,7 @@ const ControlPanel = ({
             {/* Row 4 */}
             <div className="flex items-center">
               <span className="inline-flex items-center gap-1">
-                <span className="italic">L</span> = 
+                <span className="italic">L</span> =
                 <div className="formula-modal__fraction">
                   <span className="formula-modal__fraction-top italic">X<sub>L</sub></span>
                   <span className="formula-modal__fraction-bottom">2<span className="italic">πf</span></span>
@@ -140,7 +143,7 @@ const ControlPanel = ({
             {/* Row 5 */}
             <div className="flex items-center col-span-2">
               <span className="inline-flex items-center gap-1">
-                <span className="italic">C</span> = 
+                <span className="italic">C</span> =
                 <div className="formula-modal__fraction">
                   <span className="formula-modal__fraction-top px-2">1</span>
                   <span className="formula-modal__fraction-bottom">2<span className="italic">πfX<sub>C</sub></span></span>
@@ -151,21 +154,25 @@ const ControlPanel = ({
         </div>
       )}
 
+      {/* <div id="observation-table-walkthrough-target">
+        <ObservationTable observations={observations} />
+      </div> */}
+
       {showValuesModal && isUnlocked && (
         <div className="formula-modal">
           <div className="formula-modal__grid formula-modal__grid--values">
             <div className="flex items-center italic"><span>R = 100 Ω</span></div>
             <div className="flex items-center italic"><span>Z = 99.345 Ω</span></div>
-            
+
             <div className="flex items-center italic"><span>X<sub>L</sub> = 62.832 Ω</span></div>
             <div className="flex items-center italic"><span>cos(𝜙) = 0.993</span></div>
-            
+
             <div className="flex items-center italic"><span>X<sub>C</sub> = 67.726 Ω</span></div>
             <div className="flex items-center italic"><span>S = 5.798 VA</span></div>
-            
+
             <div className="flex items-center italic"><span>L = 0.20 H</span></div>
             <div className="flex items-center italic"><span>Q = 0.662 VAr</span></div>
-            
+
             <div className="flex items-center col-span-2 italic"><span>C = 47 µF</span></div>
           </div>
         </div>

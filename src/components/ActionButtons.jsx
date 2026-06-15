@@ -91,7 +91,7 @@ const ActionButtons = ({
       icon={<ActionButtonsIcon />} 
       title="ACTION BUTTONS"
     >
-      <div id="action-buttons-panel" className="action-buttons__grid">
+      <div className="action-buttons__grid">
         
         {buttons.map(({ label, tone, Icon, handlerName, id }) => {
           const isDisabled = disabledButtons[handlerName];

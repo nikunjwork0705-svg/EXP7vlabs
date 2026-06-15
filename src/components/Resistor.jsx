@@ -23,6 +23,10 @@ const Resistor = ({
         alt={isRVerified ? "100 Ohm Resistor" : "0 Ohm Resistor"} 
         className="w-full h-full object-contain transition-all duration-300" 
       />
+      <div
+        id="resistor-walkthrough-target"
+        style={{ position: 'absolute', top: '25%', left: '10%', width: '80%', height: '50%', pointerEvents: 'none' }}
+      />
     </article>
   )
 }

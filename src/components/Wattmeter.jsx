@@ -14,9 +14,11 @@ const Wattmeter = ({ label = 'W', value = 0, switchOn = false }) => {
   const angle = startAngle + (ratio * (endAngle - startAngle))
 
   return (
-    <article id="ac-wattmeter-w" 
-    className={`wattmeter wattmeter--${label}` }
-    title={`${label} Live Value: ${value} W`}
+    <article 
+      id="ac-wattmeter-w" 
+      className={`wattmeter wattmeter--${label}`}
+      title={`${label} Live Value: ${value} W`}
+      style={{ position: 'relative', width: '100%', height: '100%' }}
     >
       <img src={wImg} alt={`${label} wattmeter`} className="wattmeter__image" />
       <div
@@ -30,6 +32,22 @@ const Wattmeter = ({ label = 'W', value = 0, switchOn = false }) => {
       >
         <img src={needleImg} alt="Needle" className="wattmeter__needle-image" />
       </div>
+
+      {/* THE INVISIBLE TARGET BOX 
+        Tweak top, left, width, and height to manually crop the highlight box! 
+      */}
+      <div
+        id="wattmeter-walkthrough-target"
+        style={{
+          position: 'absolute',
+          top: '0%',       /* Adjust to move top edge up/down */
+          left: '0%',      /* Adjust to move left edge left/right */
+          width: '100%',   /* Squeeze or expand overall width */
+          height: '102%',   /* Squeeze or expand overall height */
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      />
     </article>
   )
 }

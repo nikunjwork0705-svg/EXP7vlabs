@@ -14,6 +14,10 @@ const Inductor = () => {
         alt="Inductor" 
         className="w-full h-full object-contain" 
       />
+      <div
+        id="inductor-walkthrough-target"
+        style={{ position: 'absolute', top: '0%', left: '25%', width: '50%', height: '90%', pointerEvents: 'none' }}
+      />
     </article>
   )
 }

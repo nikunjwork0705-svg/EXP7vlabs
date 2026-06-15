@@ -20,11 +20,13 @@ const Voltmeter = ({ label = 'V', value = 0, switchOn = false }) => {
   const angle = startAngle + (ratio * (endAngle - startAngle))
 
   return (
-    <article id="ac-voltage-v" 
-    className={`voltmeter voltmeter--${label}`}
-     aria-label={`${label} voltmeter`}
-     title={`${label} Live Value: ${value} V`}
-     >
+    <article 
+      id="ac-voltage-v" 
+      className={`voltmeter voltmeter--${label}`}
+      aria-label={`${label} voltmeter`}
+      title={`${label} Live Value: ${value} V`}
+      style={{ position: 'relative', width: '100%', height: '100%' }}
+    >
       <img src={voltmeterImages[label]} alt={`${label} voltmeter`} className="voltmeter__image" />
       
       <div
@@ -38,6 +40,20 @@ const Voltmeter = ({ label = 'V', value = 0, switchOn = false }) => {
       >
         <img src={needleImg} alt="Needle" className="voltmeter__needle-image" />
       </div>
+
+      {/* THE INVISIBLE TARGET: Matches CSS scaleX(1.2) and scaleY(0.89) exactly */}
+      <div
+        id="voltmeter-walkthrough-target"
+        style={{
+          position: 'absolute',
+          top: '0%',   
+          left: '2%',  
+          width: '96%', 
+          height: '105%', 
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      />
     </article>
   )
 }
