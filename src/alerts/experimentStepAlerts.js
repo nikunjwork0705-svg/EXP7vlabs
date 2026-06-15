@@ -2,6 +2,7 @@ export const EXPERIMENT_ALERTS = {
   connectionMode: {
     dedupeKey: 'step-1-connection-mode',
     description: 'Drag nodes from apparatus to complete the circuit connections.',
+    duration: 4000,
     icon: '🔌',
     stepNumber: 1,
     target: '#circuit-panel',
@@ -10,6 +11,7 @@ export const EXPERIMENT_ALERTS = {
   },
   circuitConnectionsCompleted: {
     description: 'The default wiring path has been placed on the apparatus.',
+    duration: 3000,
     icon: '✅',
     stepNumber: 1,
     target: '#circuit-panel',
@@ -18,6 +20,7 @@ export const EXPERIMENT_ALERTS = {
   },
   incorrectNodeConnection: {
     description: 'One or more wires are connected to the wrong node pair.',
+    duration: 4000,
     icon: '❌',
     stepNumber: 1,
     target: '#circuit-panel',
@@ -35,6 +38,7 @@ export const EXPERIMENT_ALERTS = {
   },
   connectionsVerified: {
     description: 'You can now set resistance values and power the circuit.',
+    duration: 3500,
     icon: '✅',
     stepNumber: 2,
     target: '#resistance-controls',
@@ -42,15 +46,18 @@ export const EXPERIMENT_ALERTS = {
     type: 'success',
   },
   connectionErrorFound: {
+    description: 'Please recheck your wiring against the circuit diagram.',
+    duration: 4500,
     icon: '⚠️',
     stepNumber: 2,
     target: '#circuit-panel',
-    title: 'Connection Error Found - Please Recheck Wiring',
+    title: 'Connection Error Found',
     type: 'error',
   },
   adjustResistance: {
     dedupeKey: 'step-3-adjust-resistance',
     description: 'Use the three resistance sliders before starting the supply.',
+    duration: 4000,
     icon: '🎛️',
     stepNumber: 3,
     target: '#resistance-controls',
@@ -59,6 +66,7 @@ export const EXPERIMENT_ALERTS = {
   },
   resistanceLocked: {
     description: 'Resistance controls are locked while the circuit is powered.',
+    duration: 3000,
     icon: '✅',
     stepNumber: 3,
     target: '#resistance-controls',
@@ -67,6 +75,7 @@ export const EXPERIMENT_ALERTS = {
   },
   powerOn: {
     description: 'The supply is now feeding the verified circuit.',
+    duration: 3000,
     icon: '⚡',
     stepNumber: 4,
     target: '#power-supply',
@@ -75,6 +84,7 @@ export const EXPERIMENT_ALERTS = {
   },
   cannotStartPower: {
     description: 'Run CHECK and correct the circuit wiring before powering the supply.',
+    duration: 4500,
     icon: '⚠️',
     stepNumber: 4,
     target: '#check-button',
@@ -84,6 +94,7 @@ export const EXPERIMENT_ALERTS = {
   adjustVoltage: {
     dedupeKey: 'step-5-adjust-voltage',
     description: 'Move the voltage control and watch the meter needles respond.',
+    duration: 4000,
     icon: '⚡',
     stepNumber: 5,
     target: '#voltage-control',
@@ -121,6 +132,7 @@ export const EXPERIMENT_ALERTS = {
   },
   readingAdded: {
     description: 'The observation row has been stored.',
+    duration: 3000,
     icon: '✅',
     stepNumber: 6,
     target: '#observation-table-panel',
@@ -129,6 +141,7 @@ export const EXPERIMENT_ALERTS = {
   },
   readingAlreadyExists: {
     description: 'Change the voltage before recording another observation.',
+    duration: 4000,
     icon: '⚠️',
     stepNumber: 6,
     target: '#voltage-control',
@@ -137,6 +150,7 @@ export const EXPERIMENT_ALERTS = {
   },
   continueReadings: {
     description: 'Record readings at different voltage settings before plotting.',
+    duration: 4500,
     icon: '📊',
     stepNumber: 7,
     target: '#add-reading-button',
@@ -144,6 +158,8 @@ export const EXPERIMENT_ALERTS = {
     type: 'info',
   },
   minimumReadingsRequired: {
+    description: 'You need at least 6 readings to generate an accurate graph.',
+    duration: 4500,
     icon: '⚠️',
     stepNumber: 7,
     target: '#observation-table-panel',
@@ -152,6 +168,7 @@ export const EXPERIMENT_ALERTS = {
   },
   sufficientData: {
     description: 'The graph and report controls are ready to use.',
+    duration: 3500,
     icon: '✅',
     stepNumber: 7,
     target: '#plot-button',
@@ -169,6 +186,7 @@ export const EXPERIMENT_ALERTS = {
   },
   kclVerified: {
     description: 'The total current equals the sum of branch currents within tolerance.',
+    duration: 4000,
     icon: '✅',
     stepNumber: 8,
     target: '#observation-table-panel',
@@ -177,6 +195,7 @@ export const EXPERIMENT_ALERTS = {
   },
   valuesDeviate: {
     description: 'Check wiring, resistance values, and recorded readings before continuing.',
+    duration: 5000,
     icon: '⚠️',
     stepNumber: 8,
     target: '#observation-table-panel',
@@ -194,6 +213,7 @@ export const EXPERIMENT_ALERTS = {
   },
   graphPlotted: {
     description: 'The recorded observations are now plotted.',
+    duration: 3000,
     icon: '✅',
     stepNumber: 9,
     target: '#graph-panel',
@@ -201,6 +221,8 @@ export const EXPERIMENT_ALERTS = {
     type: 'success',
   },
   insufficientGraphReadings: {
+    description: 'Add more readings to the table before attempting to plot.',
+    duration: 4000,
     icon: '❌',
     stepNumber: 9,
     target: '#observation-table-panel',
@@ -218,6 +240,7 @@ export const EXPERIMENT_ALERTS = {
   },
   printLayoutGenerated: {
     description: 'The print dialog will use the generated experiment layout.',
+    duration: 3000,
     icon: '✅',
     stepNumber: 10,
     target: '#print-button',
@@ -237,6 +260,7 @@ export const EXPERIMENT_ALERTS = {
     confirmLabel: 'OK',
     dedupeKey: 'step-11-reset-warning',
     description: 'Confirm reset before the current table and circuit are cleared.',
+    duration: 0, // 0 usually prevents auto-dismissal for confirmation alerts
     icon: '⚠️',
     placement: 'center',
     requiresConfirmation: true,
@@ -247,6 +271,7 @@ export const EXPERIMENT_ALERTS = {
   },
   resetSuccess: {
     description: 'The apparatus is ready for a fresh run.',
+    duration: 3000,
     icon: '✅',
     stepNumber: 11,
     target: '#circuit-panel',

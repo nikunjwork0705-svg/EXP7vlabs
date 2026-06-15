@@ -7,13 +7,23 @@ const icons = {
 }
 
 const SectionCard = ({ children, className = '', icon, title }) => {
-  const Icon = icons[icon]
+  
+  const renderIcon = () => {
+    if (!icon) return null;
+    
+    if (typeof icon === 'string' && icons[icon]) {
+      const DictionaryIcon = icons[icon];
+      return <DictionaryIcon />;
+    }
+    
+    return icon;
+  };
 
   return (
     <section className={`section-card ${className}`}>
       <div className="section-card__heading">
         <span className="section-card__line" />
-        {Icon ? <Icon /> : null}
+        {renderIcon()}
         <h2>{title}</h2>
         <span className="section-card__line" />
       </div>

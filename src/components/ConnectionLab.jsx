@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 
-import CircuitDiagram from './CircuitDiagram.jsx'
 import EquipmentPanel from './EquipmentPanel.jsx'
 
 import {
@@ -9,7 +8,6 @@ import {
   deleteConnectionsForTerminal,
   lockJsPlumbCircuit,
   resolveJsPlumb,
-  validateOldExperimentConnections,
   wireHoverPaintStyles,
   wirePaintStyles,
 } from '../utils/jsPlumbWiring.js'
@@ -36,7 +34,8 @@ const ConnectionLab = ({
   variacOn,
   setVariacOn,
   switchOn,
-  setSwitchOn
+  setSwitchOn,
+  isRVerified 
 }) => {
   const containerRef = useRef(null)
   const instanceRef = useRef(null)
@@ -52,28 +51,21 @@ const ConnectionLab = ({
 
   useEffect(() => {
     selectedRef.current = selected
-
     setPowerOn(false)
-
     if (setIsVerified) {
       setIsVerified(false)
     }
   }, [selected])
 
-
   useEffect(() => {
     let cancelled = false
-
     const initJsPlumb = async () => {
       const jsPlumbModule = await import('jsplumb')
       const jsPlumb = resolveJsPlumb(jsPlumbModule)
 
-      if (cancelled || !containerRef.current || !jsPlumb?.getInstance) {
-        return
-      }
+      if (cancelled || !containerRef.current || !jsPlumb?.getInstance) return
 
       instanceRef.current?.reset()
-
       containerRef.current.classList.remove('connection-lab--locked')
       setIsLocked(false)
 
@@ -81,135 +73,79 @@ const ConnectionLab = ({
         Container: containerRef.current,
         ConnectionsDetachable: true,
         ReattachConnections: true,
-        Connector: ['Bezier', { curviness: 20 }],
-        PaintStyle: {
-          ...wirePaintStyles.positive,
-        },
-        HoverPaintStyle: {
-          ...wireHoverPaintStyles.positive,
-        },
+        Connector: ['Bezier', { curviness: 160 }],
+        PaintStyle: { ...wirePaintStyles.positive },
+        HoverPaintStyle: { ...wireHoverPaintStyles.positive },
         Endpoint: ['Dot', { radius: 5 }],
       })
 
       instanceRef.current = instance
 
       instance.registerConnectionTypes({
-        positive: {
-          paintStyle: {
-            ...wirePaintStyles.positive,
-          },
-          hoverPaintStyle: {
-            ...wireHoverPaintStyles.positive,
-          },
-        },
-        negative: {
-          paintStyle: {
-            ...wirePaintStyles.negative,
-          },
-          hoverPaintStyle: {
-            ...wireHoverPaintStyles.negative,
-          },
-        },
-      })
-
-      const validLoads = ['CFL', 'Lamp', 'LED', 'Tubelight'];
-
-      instance.bind('beforeDrag', (params) => {
-        if (!validLoads.includes(selectedRef.current)) {
-          alert("Please choose a load for the experiment first!")
-          return false
-        }
-        return true
-      })
-      instance.bind('beforeDrop', (info) => {
-        if (!validLoads.includes(selectedRef.current)) {
-          return false
-        }
-        return true
-      })
-
-      instance.bind('connection', (info) => {
-        if (!validLoads.includes(selectedRef.current)) {
-          instance.deleteConnection(info.connection);
-        }
+        positive: { paintStyle: { ...wirePaintStyles.positive }, hoverPaintStyle: { ...wireHoverPaintStyles.positive } },
+        negative: { paintStyle: { ...wirePaintStyles.negative }, hoverPaintStyle: { ...wireHoverPaintStyles.negative } },
       })
 
       instance.setSuspendDrawing(true)
-
       addAllEndpoints(instance)
-
       instance.setSuspendDrawing(false, true)
 
-      window.setTimeout(() => {
-        instance.repaintEverything()
-      }, 100)
+      window.setTimeout(() => instance.repaintEverything(), 100)
     }
 
     initJsPlumb()
 
     const handleResize = () => {
-      window.setTimeout(() => {
-        instanceRef.current?.repaintEverything()
-      }, 100)
+      window.setTimeout(() => instanceRef.current?.repaintEverything(), 100)
     }
-
     window.addEventListener('resize', handleResize)
 
     return () => {
       cancelled = true
       window.removeEventListener('resize', handleResize)
-
       instanceRef.current?.reset()
       instanceRef.current = null
     }
   }, [resetRequest])
 
   useEffect(() => {
-    if (!autoConnect || !instanceRef.current || isLocked) {
-      return
-    }
-
+    if (!autoConnect || !instanceRef.current || isLocked) return
     autoConnectDefaultCircuit(instanceRef.current)
-
-    window.setTimeout(() => {
-      instanceRef.current?.repaintEverything()
-    }, 80)
+    window.setTimeout(() => instanceRef.current?.repaintEverything(), 80)
   }, [autoConnect, isLocked])
 
+  // --- CHANGED: Extract actual jsPlumb wires and send to App.jsx ---
   useEffect(() => {
-    if (checkRequest === 0 || !instanceRef.current) {
-      return
-    }
+    if (checkRequest === 0 || !instanceRef.current) return
 
-    const result = validateOldExperimentConnections(instanceRef.current)
+    // Get all wires currently drawn on the screen
+    const rawConnections = instanceRef.current.getConnections().map(conn => [
+      conn.sourceId,
+      conn.targetId
+    ]);
 
-    if (result.isCorrect) {
+    // Send them up to App.jsx to validate
+    onCheckConnectionsRef.current?.({ rawConnections })
+  }, [checkRequest])
+
+  // --- CHANGED: Lock the circuit when App.jsx says it's verified ---
+  useEffect(() => {
+    if (isVerified && instanceRef.current && !isLocked) {
       lockJsPlumbCircuit(instanceRef.current, containerRef.current)
       setIsLocked(true)
     }
-
-    onCheckConnectionsRef.current?.(result)
-  }, [checkRequest])
+  }, [isVerified, isLocked])
 
   const handleLabelClick = (event) => {
     const label = event.target.closest('.terminal-number-label')
-
-    if (!label || !containerRef.current?.contains(label)) {
-      return
-    }
-
+    if (!label || !containerRef.current?.contains(label)) return
+    
     event.preventDefault()
     event.stopPropagation()
-
-    if (isLocked) {
-      return
-    }
-
+    
+    if (isLocked) return
     const terminalId = label.dataset.terminalId
-
-    if (!terminalId || !instanceRef.current) {
-      return
-    }
+    if (!terminalId || !instanceRef.current) return
 
     deleteConnectionsForTerminal(instanceRef.current, terminalId)
     instanceRef.current.repaintEverything?.()
@@ -229,24 +165,8 @@ const ConnectionLab = ({
         setConnections={setConnections}
         isVerified={isVerified}
         switchOn={switchOn} 
-      />
-
-      <CircuitDiagram
-        r1={r1}
-        r2={r2}
-        r3={r3}
-        selected={selected}
-        setSelected={setSelected}
-        connections={connections}
-        setConnections={setConnections}
-        voltage={voltage}
-        setVoltage={setVoltage}
-        mcbOn={powerOn}
-        isVerified={isVerified}
-        variacOn={variacOn}
-        setVariacOn={setVariacOn}
-        switchOn={switchOn}
         setSwitchOn={setSwitchOn}
+        isRVerified={isRVerified} 
       />
     </div>
   )

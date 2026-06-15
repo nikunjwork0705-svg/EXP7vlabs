@@ -1,53 +1,77 @@
+// ==========================================
+// TERMINAL DEFINITIONS
+// ==========================================
 export const POSITIVE_TERMINALS = [
   '1-endpoint', '3-endpoint', '5-endpoint', '8-endpoint', '11-endpoint', 
-  '13-endpoint', '15-endpoint', '18-endpoint', '19-endpoint'
+  '13-endpoint', '15-endpoint', '17-endpoint', '19-endpoint', '21-endpoint', 
+  '23-endpoint', '25-endpoint'
 ]
 
 export const NEGATIVE_TERMINALS = [
   '2-endpoint', '4-endpoint', '6-endpoint', '7-endpoint', '9-endpoint', 
-  '10-endpoint', '12-endpoint', '14-endpoint', '16-endpoint', '17-endpoint', '20-endpoint'
-]
-
-export const VALID_CONNECTION_SEQUENCE = [
-  '1-endpoint', '11-endpoint',
-  '2-endpoint', '12-endpoint',
-
-  '3-endpoint', '13-endpoint',
-  '4-endpoint', '14-endpoint',
-
-  '13-endpoint', '15-endpoint',
-  '16-endpoint', '17-endpoint',
-
-  '5-endpoint', '18-endpoint',
-  '6-endpoint', '9-endpoint',
-
-  '9-endpoint', '10-endpoint',
-  '8-endpoint', '19-endpoint',
-
-  '7-endpoint', '20-endpoint',
-  '7-endpoint', '14-endpoint',
+  '10-endpoint', '12-endpoint', '14-endpoint', '16-endpoint', '18-endpoint', 
+  '20-endpoint', '22-endpoint', '24-endpoint', '26-endpoint'
 ]
 
 export const DEFAULT_AUTO_CONNECTIONS = [
-  ['1-endpoint', '11-endpoint'],
-  ['2-endpoint', '12-endpoint'],
-
-  ['3-endpoint', '13-endpoint'],
-  ['4-endpoint', '14-endpoint'],
-
-  ['13-endpoint', '15-endpoint'],
-  ['16-endpoint', '17-endpoint'],
-
-  ['5-endpoint', '18-endpoint'],
-  ['6-endpoint', '9-endpoint'],
-
-  ['9-endpoint', '10-endpoint'],
-  ['8-endpoint', '19-endpoint'],
-
-  ['7-endpoint', '20-endpoint'],
-  ['7-endpoint', '14-endpoint'],
+  ['1-endpoint', '23-endpoint'],  
+  ['2-endpoint', '24-endpoint'],  
+  ['3-endpoint', '25-endpoint'],  
+  ['4-endpoint', '26-endpoint'],  
+  ['5-endpoint', '25-endpoint'],  
+  ['6-endpoint', '9-endpoint'],   
+  ['9-endpoint', '10-endpoint'],  
+  ['7-endpoint', '18-endpoint'],  
+  ['8-endpoint', '11-endpoint'],  
+  ['11-endpoint', '13-endpoint'], 
+  ['13-endpoint', '15-endpoint'], 
+  ['12-endpoint', '17-endpoint'], 
+  ['18-endpoint', '20-endpoint'], 
+  ['14-endpoint', '19-endpoint'], 
+  ['16-endpoint', '21-endpoint'], 
+  ['20-endpoint', '22-endpoint'], 
+  ['26-endpoint', '7-endpoint'],  
 ]
 
+export const VALID_CONNECTION_SEQUENCE = []
+
+// ==========================================
+// CUSTOM CURVINESS OVERRIDES
+// ==========================================
+const DEFAULT_CURVINESS = 180;
+
+// Helper to create a consistent key regardless of order
+const connectionKey = (a, b) => [a, b].sort().join("-");
+
+// Map of specific curviness values for specific connections
+const WIRE_CURVE_OVERRIDES = new Map([
+  [connectionKey('1-endpoint', '23-endpoint'), 30],
+  [connectionKey('2-endpoint', '24-endpoint'), 40],
+  [connectionKey('3-endpoint', '25-endpoint'), -40],
+  [connectionKey('4-endpoint', '26-endpoint'), -90],
+  [connectionKey('5-endpoint', '25-endpoint'), 80],
+  [connectionKey('6-endpoint', '9-endpoint'), 60],
+  [connectionKey('9-endpoint', '10-endpoint'), 15],
+  [connectionKey('7-endpoint', '18-endpoint'), -100],
+  [connectionKey('8-endpoint', '11-endpoint'), 60],
+  [connectionKey('11-endpoint', '13-endpoint'), 80],
+  [connectionKey('13-endpoint', '15-endpoint'), -10],
+  [connectionKey('12-endpoint', '17-endpoint'), 35],
+  [connectionKey('18-endpoint', '20-endpoint'), -90],
+  [connectionKey('14-endpoint', '19-endpoint'), -40],
+  [connectionKey('16-endpoint', '21-endpoint'), 90],
+  [connectionKey('20-endpoint', '22-endpoint'), -40],
+  [connectionKey('26-endpoint', '7-endpoint'), 120],
+]);
+
+function getWireCurvinessForConnection(src, tgt) {
+  const key = connectionKey(src, tgt);
+  return WIRE_CURVE_OVERRIDES.get(key) ?? DEFAULT_CURVINESS;
+}
+
+// ==========================================
+// CORE JSPLUMB LOGIC
+// ==========================================
 export const resolveJsPlumb = (module) => (
   module?.jsPlumb
   || module?.default?.jsPlumb
@@ -57,15 +81,12 @@ export const resolveJsPlumb = (module) => (
 
 const getAllConnections = (instance) => {
   if (!instance) return []
-
   if (typeof instance.getAllConnections === 'function') {
     return instance.getAllConnections()
   }
-
   if (typeof instance.getConnections === 'function') {
     return instance.getConnections()
   }
-
   return []
 }
 
@@ -82,7 +103,6 @@ export const deleteConnectionsForTerminal = (instance, terminalId) => {
       instance.deleteConnection(connection)
       return
     }
-
     connection.detach?.()
   })
 
@@ -93,6 +113,9 @@ const isNegativeTerminal = (terminalId) => (
   NEGATIVE_TERMINALS.includes(terminalId)
 )
 
+// ==========================================
+// PAINT STYLES
+// ==========================================
 const terminalPaintStyles = {
   positive: {
     fill: '#0969e8',
@@ -200,9 +223,11 @@ export const wireHoverPaintStyles = {
   },
 }
 
+// ==========================================
+// CONNECTION MANAGEMENT
+// ==========================================
 export const getConnectionBetween = (instance, firstId, secondId) => {
   const connections = getAllConnections(instance)
-
   return connections.find((connection) => {
     const sourceId = connection.sourceId || connection.source?.id
     const targetId = connection.targetId || connection.target?.id
@@ -220,16 +245,16 @@ export const hasConnectionBetween = (instance, firstId, secondId) => (
 
 export const addTerminalEndpoint = (instance, terminalId, type) => {
   const element = document.getElementById(terminalId)
-
-  if (!element) {
-    return
-  }
+  if (!element) return;
 
   instance.addEndpoint(element, {
     uuid: terminalId,
     endpoint: ['Dot', { radius: getEndpointRadius(element) }],
     cssClass: getEndpointCssClass(terminalId, type),
-    anchor: ['Center'],
+    
+    // U-Shaped anchor forcing wires downward slightly before curving
+    anchor: [0.5, 1, 0, 1], 
+    
     isSource: true,
     isTarget: true,
     connectionType: type,
@@ -251,6 +276,11 @@ export const addAllEndpoints = (instance) => {
     addTerminalEndpoint(instance, terminalId, 'negative')
   })
 
+  // IMPORTANT: Bind event listener to apply custom curviness dynamically when a user draws a wire
+  instance.bind("connection", function (info) {
+    const customCurviness = getWireCurvinessForConnection(info.sourceId, info.targetId);
+    info.connection.setConnector(["Bezier", { curviness: customCurviness }]);
+  });
 }
 
 export const autoConnectDefaultCircuit = (instance) => {
@@ -259,52 +289,32 @@ export const autoConnectDefaultCircuit = (instance) => {
       return
     }
 
+    const customCurviness = getWireCurvinessForConnection(source, target);
+
     instance.connect({
       uuids: [source, target],
       type: isNegativeTerminal(source) ? 'negative' : 'positive',
+      // Apply the custom curviness to auto-drawn wires as well
+      connector: ["Bezier", { curviness: customCurviness }] 
     })
   })
 }
 
 export const validateOldExperimentConnections = (instance) => {
-  const matchedConnections = []
+  let matchedCount = 0;
 
-  for (let i = 0; i < VALID_CONNECTION_SEQUENCE.length - 1; i += 1) {
-    const firstTerminal = VALID_CONNECTION_SEQUENCE[i]
-    const secondTerminal = VALID_CONNECTION_SEQUENCE[i + 1]
-
-    const matchedConnection = getConnectionBetween(
-      instance,
-      firstTerminal,
-      secondTerminal,
-    )
-
-    if (!matchedConnection || i % 2 !== 0) {
-      continue
+  DEFAULT_AUTO_CONNECTIONS.forEach(([source, target]) => {
+    if (hasConnectionBetween(instance, source, target)) {
+      matchedCount++;
     }
+  });
 
-    matchedConnections.push(matchedConnection)
-
-    try {
-      const nextPairIsMissing = !hasConnectionBetween(
-        instance,
-        VALID_CONNECTION_SEQUENCE[i + 2],
-        VALID_CONNECTION_SEQUENCE[i + 3],
-      )
-
-      if (nextPairIsMissing && i % 4 === 0) {
-        matchedConnections.pop()
-      }
-    } catch {
-    }
-  }
-
-  const totalConnections = getAllConnections(instance).length
-  const requiredConnections = DEFAULT_AUTO_CONNECTIONS.length
+  const totalConnections = getAllConnections(instance).length;
+  const requiredConnections = DEFAULT_AUTO_CONNECTIONS.length;
 
   return {
-    isCorrect: matchedConnections.length === requiredConnections && totalConnections === requiredConnections,
-    matchedCount: matchedConnections.length,
+    isCorrect: matchedCount === requiredConnections && totalConnections === requiredConnections,
+    matchedCount,
     totalConnections,
   }
 }

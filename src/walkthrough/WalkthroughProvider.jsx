@@ -162,22 +162,38 @@ const WalkthroughProvider = ({
   }, [isOpen, isPositioningTarget, readActiveTarget])
 
   useEffect(() => {
-    if (!isOpen || !activeTargetSelector) {
+    if (!isOpen || isPositioningTarget) {
       return undefined
     }
 
-    const target = document.querySelector(activeTargetSelector)
+    let animationFrame = null
 
-    if (!target) {
-      return undefined
+    const scheduleRefresh = () => {
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+
+      // requestAnimationFrame ensures this runs smoothly without destroying scroll performance
+      animationFrame = window.requestAnimationFrame(readActiveTarget)
     }
 
-    target.classList.add('walkthrough-active-target')
+    // Existing resize listeners
+    window.addEventListener('resize', scheduleRefresh)
+    window.visualViewport?.addEventListener('resize', scheduleRefresh)
+    
+    // NEW: Scroll listener with capture to catch nested scrolls
+    window.addEventListener('scroll', scheduleRefresh, { capture: true, passive: true })
 
     return () => {
-      target.classList.remove('walkthrough-active-target')
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame)
+      }
+
+      window.removeEventListener('resize', scheduleRefresh)
+      window.visualViewport?.removeEventListener('resize', scheduleRefresh)
+      window.removeEventListener('scroll', scheduleRefresh, { capture: true })
     }
-  }, [activeTargetSelector, isOpen])
+  }, [isOpen, isPositioningTarget, readActiveTarget])
 
   useEffect(() => {
     if (!isOpen) {
@@ -249,7 +265,6 @@ const WalkthroughProvider = ({
   return (
     <WalkthroughContext.Provider value={contextValue}>
       {children}
-      <WalkthroughStartButton />
       <WalkthroughOverlay />
     </WalkthroughContext.Provider>
   )

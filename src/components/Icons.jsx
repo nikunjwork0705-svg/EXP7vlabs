@@ -7,10 +7,11 @@ export const CheckIcon = () => (
 
 export const AddIcon = () => (
   <svg aria-hidden="true" viewBox="0 0 32 32">
-    <rect fill="none" height="22" rx="2" stroke="currentColor" strokeWidth="2.5" width="22" x="5" y="5" />
-    <path d="M5 12h22M5 19h22M12 5v22M20 5v22" stroke="currentColor" strokeWidth="2.2" />
+    <circle cx="16" cy="16" fill="none" r="11" stroke="currentColor" strokeWidth="3" />
+    <path d="M16 10v12M10 16h12" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="3" />
   </svg>
 )
+
 export const CloseIcon = () => (
   <svg aria-hidden="true" viewBox="0 0 32 32">
     <rect fill="none" height="22" rx="2" stroke="currentColor" strokeWidth="2.5" width="22" x="5" y="5" />
@@ -91,9 +92,35 @@ export const SlidersIcon = () => (
   </svg>
 )
 
-// export const LightIcon = () => (
-//   <svg aria-hidden="true" viewBox="0 0 32 32">
-//     <path d="M11 23h10M13 27h6M22 14a6 6 0 1 0-12 0c0 2.7 1.8 4.1 3 5.7.4.6.5 1.1.5 1.8h5c0-.7.1-1.2.5-1.8 1.2-1.6 3-3 3-5.7Z" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-//     <path d="M16 2v3M5.5 6.2 7.6 8.3M26.5 6.2l-2.1 2.1" stroke="currentColor" strokeLinecap="round" strokeWidth="2.5" />
-//   </svg>
-// )
+export const PdfIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 32 32" style={{ width: '1.2em', height: '1.2em' }}>
+    <path d="M9 4h10l5 5v19H9z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2.5" />
+    <path d="M19 4v6h6" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="2.5" />
+    <path d="M8 17h16v8H8z" fill="currentColor" />
+    <text
+      fill="#fff"
+      fontFamily="Arial, Helvetica, sans-serif"
+      fontSize="6"
+      fontWeight="900"
+      x="16"               
+      y="23"              
+      textAnchor="middle" 
+    >
+      PDF
+    </text>
+  </svg>
+)
+
+export const ActionButtonsIcon = () => (
+  <svg aria-hidden="true" viewBox="0 0 32 32">
+    <circle cx="14.7" cy="8.7" fill="currentColor" r="6.7" />
+    <path
+      d="M12.4 8.4c0-1.3 1-2.4 2.3-2.4s2.3 1.1 2.3 2.4v8.1c.5-.6 1.2-1 2.1-1 .9 0 1.6.5 2 1.2.5-.5 1.1-.8 1.9-.8 1.3 0 2.4 1.1 2.4 2.5v8.2c0 .8-.2 1.5-.7 2.1l-1.1 1.5H12.2v-3.9l-3.1-3.4c-.6-.7-1-1.6-1-2.6v-3.7c0-.8.6-1.4 1.4-1.4.4 0 .8.2 1.1.5l1.8 2.2Z"
+      fill="currentColor"
+      stroke="#f4eadc"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.7"
+    />
+  </svg>
+)

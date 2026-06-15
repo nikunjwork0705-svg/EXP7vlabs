@@ -1,168 +1,170 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useLabAlerts } from '../alerts/useLabAlerts.js'
 
-const CalculationsBoard = ({ className = '', calculateRequest = 0, latestObservation }) => {
+const CalculationsBoard = ({ 
+  className = '', 
+  isVerified, 
+  powerOn, 
+  switchOn, 
+  voltage, 
+  observations = [], 
+  onWrongAttempt,
+  onRVerified 
+}) => {
+  const { showAlert } = useLabAlerts()
 
-  const [deviceName, setDeviceName] = useState('')
-  const [variac, setVariac] = useState('')
-  const [ammeter, setAmmeter] = useState('')
-  const [voltmeter, setVoltmeter] = useState('')
-  const [wattmeter, setWattmeter] = useState('')
-  const [calcPower, setCalcPower] = useState('')
-  const [calcResult, setCalcResult] = useState('')
+  const [calcValues, setCalcValues] = useState({
+    r: '', xL: '', xC: '', l: '', c: '', z: '', powerFactor: '', s: '', q: ''
+  })
 
-  const [finalDevice, setFinalDevice] = useState('')
-  const [finalPf, setFinalPf] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({
+    r: false, xL: false, xC: false, l: false, c: false, z: false, powerFactor: false, s: false, q: false
+  })
 
-  useEffect(() => {
-    if (calculateRequest > 0 && latestObservation) {
-      const v = latestObservation.voltage || 0
-      const a = latestObservation.i1 || 0
-      const w = latestObservation.i2 || 0
-      const loadName = latestObservation.load || ''
+  const [hasVerified, setHasVerified] = useState(false)
+  const [isFullyVerified, setIsFullyVerified] = useState(false)
 
-      setVariac(v.toString())
-      setVoltmeter(v.toString())
-      setAmmeter(a.toFixed(4))
-      setWattmeter(w.toFixed(4))
-
-      if (v > 0 && a > 0) {
-        const vi = v * a
-        const pf = w / vi
-
-        setCalcPower(w.toFixed(2))
-        setCalcResult(pf.toFixed(2))
-        setDeviceName(loadName)
-      } else {
-        alert("The latest observation has 0 Volts, 0 Amps or 0 Watts. Please check your circuit connections!")
-      }
-    }
-  }, [calculateRequest, latestObservation])
-
-  const handleVerify = () => {
-    const calculatedValue = parseFloat(calcResult)
-    const enteredValue = parseFloat(finalPf)
-
-    if (!finalDevice || finalDevice.trim() === '') {
-      alert('Please enter the Device Name to verify.')
-      return
-    }
-    if (isNaN(enteredValue)) {
-      alert('Please enter a valid Power Factor number to verify.')
-      return
-    }
-    const isDeviceCorrect = finalDevice.trim().toLowerCase() === deviceName.trim().toLowerCase()
-
-    const isExactMatch = calculatedValue === enteredValue
-    const isRoundedMatch2 = calculatedValue.toFixed(2) === enteredValue.toFixed(2)
-    const isRoundedMatch3 = calculatedValue.toFixed(3) === enteredValue.toFixed(3)
-    const isPfCorrect = isExactMatch || isRoundedMatch2 || isRoundedMatch3
-
-    if (isDeviceCorrect && isPfCorrect) {
-      alert('Verification complete! Both Device Name and Power Factor are correct.')
-    } else if (!isDeviceCorrect && isPfCorrect) {
-      alert('Almost there! The Power Factor is correct, but the Device Name is incorrect.')
-    } else if (isDeviceCorrect && !isPfCorrect) {
-      alert('The Device Name is correct, but the Power Factor does not match the calculations.')
-    } else {
-      alert('Not verified. Both the Device Name and Power Factor are incorrect.')
+  const handleInputChange = (field, val) => {
+    setCalcValues((prev) => ({ ...prev, [field]: val }))
+    if (hasVerified && !isFullyVerified) {
+      setFieldErrors((prev) => ({ ...prev, [field]: false }))
     }
   }
 
-  return (
-    <section className={`bg-white rounded-lg shadow-md overflow-hidden mt-8 ${className}`}>
+  const checkExactValues = (val, validOptionsArray) => {
+    if (!val || val.trim() === '') return false;
+    const num = parseFloat(val);
+    if (isNaN(num)) return false;
+    return validOptionsArray.includes(num);
+  }
 
-     <header className="calculations-board bg-[#1a1a1a] text-white flex justify-center items-center gap-[36px] py-3 relative">
-        <span className="header-board__ornament" style={{ width: '420px' }} />
-        <h1
-          className="m-0 tracking-wider"
-          style={{ fontSize: '34px', fontWeight: 900, textShadow: '0 3px 0 rgba(0, 0, 0, 0.45)' }}
-        >
-          Theoretical Calculations
-        </h1>
-        <span className="header-board__ornament header-board__ornament--right" style={{ width: '420px' }} />
+  const handleVerify = (e) => {
+    e.preventDefault()
+
+    if (!isVerified || !powerOn || !switchOn || voltage !== 24 || observations.length === 0) {
+      showAlert({ title: 'Action Required', description: 'Please complete the circuit steps and add an observation first!', type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+      return;
+    }
+
+    const hasEmptyFields = Object.values(calcValues).some(val => val.trim() === '');
+    if (hasEmptyFields) {
+      showAlert({ title: 'Incomplete Calculations', description: 'First calculate all the components.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
+      return;
+    }
+
+    const newErrors = {
+      r: !checkExactValues(calcValues.r, [100, 100.0, 100.00]),            
+      xL: !checkExactValues(calcValues.xL, [62.832, 62.83]),        
+      xC: !checkExactValues(calcValues.xC, [67.726, 67.73, 62.72]),        
+      l: !checkExactValues(calcValues.l, [0.20, 0.2]),          
+      c: !checkExactValues(calcValues.c, [47, 47.0, 47.00]),            
+      z: !checkExactValues(calcValues.z, [99.345, 99.34, 99.35]),        
+      powerFactor: !checkExactValues(calcValues.powerFactor, [0.993, 0.99]),
+      s: !checkExactValues(calcValues.s, [5.798, 5.79, 5.80]),           
+      q: !checkExactValues(calcValues.q, [0.662, 0.66])           
+    }
+
+    setCalcValues(prev => {
+      const clearedValues = { ...prev };
+      Object.keys(newErrors).forEach(key => {
+        if (newErrors[key] === true) { clearedValues[key] = ''; }
+      });
+      return clearedValues;
+    });
+
+    setFieldErrors(newErrors)
+    setHasVerified(true)
+
+    const hasAnyError = Object.values(newErrors).some(err => err === true);
+
+    // CRITICAL FIX: Pass the boolean AND the actual values up to App.jsx!
+    if (onRVerified) {
+      onRVerified(!hasAnyError, calcValues);
+    }
+
+    if (hasAnyError) {
+      if (onWrongAttempt) onWrongAttempt();
+      showAlert({ title: 'Verification Failed', description: 'Highlighted Values are Incorrect.', type: 'error', icon: '❌', placement: 'center', duration: 4000 });
+    } else {
+      setIsFullyVerified(true); 
+      showAlert({ title: 'Verification Complete', description: 'All theoretical calculations are exactly correct!', type: 'success', icon: '✅', placement: 'center', duration: 3500 });
+    }
+  }
+
+  const getInputStyle = (field) => {
+    if (!hasVerified) return {}; 
+    if (fieldErrors[field]) return { backgroundColor: '#cd2d1e', color: '#ffffff', borderColor: '#c33629' };
+    if (isFullyVerified) return { backgroundColor: '#f0fdf4', borderColor: '#86efac', color: '#166534' };
+    return { backgroundColor: 'transparent', color: 'inherit' };
+  }
+
+  return (
+    <section className={`calc-board-container ${className}`} id="calculations-board">
+      <header className="calc-board-header">
+        <div className="calc-board-title-wrapper">
+          <span className="header-board__ornament calc-board-ornament" />
+          <h2 className="calc-board-title">Theoretical Calculations</h2>
+          <span className="header-board__ornament header-board__ornament--right calc-board-ornament" />
+        </div>
       </header>
 
-      <div id="calculations-board" className="p-12 text-xl font-bold text-[#111]">
-        <div className="grid grid-cols-2 gap-x-12 gap-y-8 max-w-4xl">
-          
-          {/* left column */}
-          <div className="space-y-8">
-            <div className="flex items-center">
-              <span className="w-10">R</span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">Ω</span>
-            </div>
+      <div className="calc-board-body">
+        <form onSubmit={handleVerify} className="calc-board-form">
+          <div className="calc-board-grid">
             
-            <div className="flex items-center">
-              <span className="w-10">X<sub>L</sub></span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">Ω</span>
+            <div className="calc-input-group">
+              <label className="calc-input-label">R (Ω)</label>
+              <input step="any" placeholder="Resistance" value={calcValues.r} onChange={(e) => handleInputChange('r', e.target.value)} style={getInputStyle('r')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
             </div>
-            
-            <div className="flex items-center">
-              <span className="w-10">X<sub>C</sub></span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">Ω</span>
-            </div>
-            
-            <div className="flex items-center">
-              <span className="w-10">L</span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">mH</span>
-            </div>
-            
-            <div className="flex items-center">
-              <span className="w-10">C</span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">μF</span>
-            </div>
-          </div>
 
-          {/* right column*/}
-          <div className="space-y-8">
-            <div className="flex items-center">
-              <span className="w-14">Z</span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">Ω</span>
+            <div className="calc-input-group">
+              <label className="calc-input-label">X<sub>L</sub> (Ω)</label>
+              <input step="any" placeholder="Inductive Reactance" value={calcValues.xL} onChange={(e) => handleInputChange('xL', e.target.value)} style={getInputStyle('xL')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
+            </div>
+
+            <div className="calc-input-group">
+              <label className="calc-input-label">X<sub>C</sub> (Ω)</label>
+              <input step="any" placeholder="Capacitive Reactance" value={calcValues.xC} onChange={(e) => handleInputChange('xC', e.target.value)} style={getInputStyle('xC')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
+            </div>
+
+            <div className="calc-input-group">
+              <label className="calc-input-label">L (H)</label>
+              <input step="any" placeholder="Inductance" value={calcValues.l} onChange={(e) => handleInputChange('l', e.target.value)} style={getInputStyle('l')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
+            </div>
+
+            <div className="calc-input-group">
+              <label className="calc-input-label">C (µF)</label>
+              <input step="any" placeholder="Capacitance" value={calcValues.c} onChange={(e) => handleInputChange('c', e.target.value)} style={getInputStyle('c')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
+            </div>
+
+            <div className="calc-input-group">
+              <label className="calc-input-label">Z (Ω)</label>
+              <input step="any" placeholder="Impedence" value={calcValues.z} onChange={(e) => handleInputChange('z', e.target.value)} style={getInputStyle('z')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
+            </div>
+
+            <div className="calc-input-group">
+              <label className="calc-input-label">cos(Φ)</label>
+              <input step="any" placeholder="Power Factor" value={calcValues.powerFactor} onChange={(e) => handleInputChange('powerFactor', e.target.value)} style={getInputStyle('powerFactor')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
+            </div>
+
+            <div className="calc-input-group">
+              <label className="calc-input-label">S (VA)</label>
+              <input step="any" placeholder="Apparent Power" value={calcValues.s} onChange={(e) => handleInputChange('s', e.target.value)} style={getInputStyle('s')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
+            </div>
+
+            <div className="calc-input-group">
+              <label className="calc-input-label">Q (VAR)</label>
+              <input step="any" placeholder="Reactive Power" value={calcValues.q} onChange={(e) => handleInputChange('q', e.target.value)} style={getInputStyle('q')} className="calc-input-field disabled:opacity-75 disabled:cursor-not-allowed" disabled={isFullyVerified} />
             </div>
             
-            <div className="flex items-center">
-              <span className="w-14">cosΦ</span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-            </div>
-            
-            <div className="flex items-center">
-              <span className="w-14">S</span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">kVA</span>
-            </div>
-            
-            <div className="flex items-center">
-              <span className="w-14">Q</span> 
-              <span className="mx-3">=</span> 
-              <input type="text" className="border border-gray-200 rounded px-2 py-1 w-24 font-normal outline-none shadow-sm" /> 
-              <span className="ml-3">kVAr</span>
-            </div>
-            
-            <div className="flex items-center pt-2">
-              <button 
-                onClick={handleVerify}
-                className="bg-[#d1d5db] text-gray-600 px-6 py-2 rounded-xl text-lg font-normal tracking-wide hover:bg-gray-300 transition-colors"
-              >
-                VERIFY
+            <div className="calc-button-wrapper" style={{ alignItems: 'flex-end', marginTop: 0 }}>
+              <button type="submit" className="calc-verify-button disabled:opacity-50 disabled:cursor-not-allowed" style={{ width: '100%' }} disabled={isFullyVerified || observations.length === 0} title={observations.length === 0 ? "Add a reading to the observation table first" : ""}>
+                {isFullyVerified ? 'VERIFIED' : 'VERIFY'}
               </button>
             </div>
-          </div>
 
-        </div>
+          </div>
+        </form>
       </div>
     </section>
   )

@@ -94,18 +94,6 @@
     },
     {
       "id": 8,
-      "target": "#calculate-button",
-      "title": {
-        "en": "Calculate Button"
-      },
-      "description": {
-        "en": "Computes the final Power Factor."
-      },
-      "audio": "#",
-      "placement": "right"
-    },
-    {
-      "id": 9,
       "target": "#reset-button",
       "title": {
         "en": "Reset Button"
@@ -117,7 +105,7 @@
       "placement": "right"
     },
     {
-      "id": 10,
+      "id": 9,
       "target": "#print-button",
       "title": {
         "en": "Print Button"
@@ -129,7 +117,7 @@
       "placement": "right"
     },
     {
-      "id": 11,
+      "id": 10,
       "target": "#control-panel",
       "title": {
         "en": "Formulas Panel"
@@ -141,7 +129,7 @@
       "placement": "right"
     },
     {
-      "id": 12,
+      "id": 11,
       "target": "#mcb-supply",
       "title": {
         "en": "MCB"
@@ -150,10 +138,10 @@
         "en": "The main power switch. Turn this on only after your circuit passes the CHECK step."
       },
       "audio": "#",
-      "placement": "left"
+      "placement": "bottom"
     },
     {
-      "id": 13,
+      "id": 12,
       "target": "#ac-voltage-v",
       "title": {
         "en": "Voltmeter"
@@ -165,19 +153,19 @@
       "placement": "bottom"
     },
     {
-      "id": 14,
-      "target": "#ac-ammeter-a",
+      "id": 13,
+      "target": "#ac-current-a1",
       "title": {
-        "en": "Ammeter"
+        "en": "Ammeter A1"
       },
       "description": {
-        "en": "Measures the main current being drawn by the selected electrical load."
+        "en": "Measures the total main current being drawn by the entire parallel circuit."
       },
       "audio": "#",
       "placement": "bottom"
     },
     {
-      "id": 15,
+      "id": 14,
       "target": "#ac-wattmeter-w",
       "title": {
         "en": "Wattmeter"
@@ -189,85 +177,121 @@
       "placement": "bottom"
     },
     {
-      "id": 16,
-      "target": "#observation-table-panel",
+      "id": 15,
+      "target": "#ac-current-a2",
       "title": {
-        "en": "Observation Table"
+        "en": "Ammeter A2"
       },
       "description": {
-        "en": "Each added reading appears in this table. Record readings for different loads to compare their power factors."
+        "en": "Measures the branch current flowing specifically through the Resistor."
       },
       "audio": "#",
-      "placement": "right"
+      "placement": "bottom"
+    },
+    {
+      "id": 16,
+      "target": "#ac-current-a3",
+      "title": {
+        "en": "Ammeter A3"
+      },
+      "description": {
+        "en": "Measures the branch current flowing specifically through the Inductor."
+      },
+      "audio": "#",
+      "placement": "left"
     },
     {
       "id": 17,
-      "target": "#equipments",
+      "target": "#ac-current-a4",
       "title": {
-        "en": "Circuit Equipment"
+        "en": "Ammeter A4"
       },
       "description": {
-        "en": "This area contains the interactive components required to complete the physical circuit."
+        "en": "Measures the branch current flowing specifically through the Capacitor."
       },
       "audio": "#",
-      "placement": "top"
+      "placement": "left"
     },
     {
       "id": 18,
       "target": "#variac-button",
       "title": {
-        "en": "Variac"
+        "en": "Autotransformer"
       },
       "description": {
-        "en": "An autotransformer used to safely step the voltage up to 230V for the experiment."
+        "en": "An autotransformer used to safely step the voltage up for the experiment."
       },
       "audio": "#",
       "placement": "top"
     },
     {
       "id": 19,
-      "target": "#fuse",
+      "target": "#resistor-component",
       "title": {
-        "en": "Fuse"
+        "en": "Resistor"
       },
       "description": {
-        "en": "Protects the circuit from overcurrent. Must be wired in series with the main supply."
+        "en": "The purely resistive component of the parallel RLC circuit."
       },
       "audio": "#",
       "placement": "top"
     },
     {
       "id": 20,
-      "target": "#switch",
+      "target": "#capacitor-component",
       "title": {
-        "en": "Switch"
+        "en": "Capacitor"
       },
       "description": {
-        "en": "The final control switch. Turn this on after setting the Variac to allow current to flow to the load."
+        "en": "The capacitive component of the parallel RLC circuit."
       },
       "audio": "#",
       "placement": "top"
     },
     {
       "id": 21,
-      "target": "#load",
+      "target": "#inductor-component",
       "title": {
-        "en": "Load Box"
+        "en": "Inductor"
       },
       "description": {
-        "en": "Click here to swap between different electrical loads (CFL, Lamp, LED, Tubelight) to test."
+        "en": "The inductive component of the parallel RLC circuit."
       },
       "audio": "#",
       "placement": "top"
     },
     {
       "id": 22,
-      "target": "#calculations-board",
+      "target": "#observation-table-panel",
       "title": {
-        "en": "Calculation Board"
+        "en": "Observation Table"
       },
       "description": {
-        "en": "All the final power factor calculations and derived results can be found in this board."
+        "en": "Each added reading appears in this table. Record your readings to calculate the power factor."
+      },
+      "audio": "#",
+      "placement": "left" 
+    },
+    {
+      "id": 23,
+      "target": "#generate-report-button",
+      "title": {
+        "en": "Generate Report"
+      },
+      "description": {
+        "en": "Click this once you have recorded enough readings to generate a final report of your experiment."
+      },
+      "audio": "#",
+      "placement": "top"
+    },
+    {
+      "id": 24,
+      "target": "#calculations-board",
+      "title": {
+        "en": "Theoretical Calculations"
+      },
+      "description": {
+        "en": "Use this board to manually calculate the theoretical values based on formulas and verify them against your readings."
       },
       "audio": "#",
       "placement": "top"

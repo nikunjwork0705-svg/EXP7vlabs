@@ -10,64 +10,62 @@ import Inductor from './Inductor.jsx'
 import Variac from './Variac.jsx'
 
 const mcbTerminals = [
-  { id: '1-endpoint', label: '1', polarity: 'plus', left: 46, top: 153, lLeft: 59, lTop: 185 },
-  { id: '2-endpoint', label: '2', polarity: 'minus', left: 99, top: 153, lLeft: 115, lTop: 185 },
+  { id: '1-endpoint', label: '1', polarity: 'plus', left: 48, top: 157, lLeft: 62, lTop: 190 },
+  { id: '2-endpoint', label: '2', polarity: 'minus', left: 96, top: 157, lLeft: 110, lTop: 190 },
 ]
 
 const voltmeterTerminals = [
-  { id: '3-endpoint', label: '3', polarity: 'plus', left: 35, top: 179, lLeft: 50, lTop: 210 },
-  { id: '4-endpoint', label: '4', polarity: 'minus', left: 110, top: 178, lLeft: 125, lTop: 210 },
+  { id: '3-endpoint', label: '3', polarity: 'plus', left: 37, top: 170, lLeft: 50, lTop: 205 },
+  { id: '4-endpoint', label: '4', polarity: 'minus', left: 108, top: 170, lLeft: 122, lTop: 205 },
 ]
 
 const ammeterTerminals = [
-  { id: '5-endpoint', label: '5', polarity: 'plus', left: 35, top: 174, lLeft: 49, lTop: 205 },
-  { id: '6-endpoint', label: '6', polarity: 'minus', left: 109, top: 174, lLeft: 122, lTop: 205 },
+  { id: '5-endpoint', label: '5', polarity: 'plus', left: 36, top: 164.5, lLeft: 49, lTop: 200 },
+  { id: '6-endpoint', label: '6', polarity: 'minus', left: 102, top: 164.5, lLeft: 117, lTop: 200 },
 ]
 
 const wattmeterTerminals = [
-  { id: '7-endpoint', label: '7', polarity: 'minus', left: 20, top: 177, lLeft: 34, lTop: 205 },
-  { id: '8-endpoint', label: '8', polarity: 'plus', left: 56, top: 177, lLeft: 70, lTop: 205 },
-  { id: '9-endpoint', label: '9', polarity: 'minus', left: 92, top: 177, lLeft: 106, lTop: 205 },
-  { id: '10-endpoint', label: '10', polarity: 'minus', left: 128, top: 177, lLeft: 142, lTop: 205 },
+  { id: '7-endpoint', label: '7', polarity: 'minus', left: 20, top: 170, lLeft: 33, lTop: 205 },
+  { id: '8-endpoint', label: '8', polarity: 'plus', left: 56, top: 170, lLeft: 69, lTop: 205 },
+  { id: '9-endpoint', label: '9', polarity: 'minus', left: 92, top: 170, lLeft: 105, lTop: 205 },
+  { id: '10-endpoint', label: '10', polarity: 'minus', left: 128, top: 170, lLeft: 142, lTop: 205 },
 ]
 
 const ammeter2Terminals = [
-  { id: '11-endpoint', label: '11', polarity: 'plus', left: 35, top: 174, lLeft: 49, lTop: 205 },
-  { id: '12-endpoint', label: '12', polarity: 'minus', left: 109, top: 174, lLeft: 122, lTop: 205 },
+  { id: '11-endpoint', label: '11', polarity: 'plus', left: 36, top: 166, lLeft: 49, lTop: 200 },
+  { id: '12-endpoint', label: '12', polarity: 'minus', left: 104, top: 166, lLeft: 119, lTop: 200 },
 ]
 
-/* --- RIGHT COLUMN AMMETERS --- */
 const ammeter3Terminals = [
-  { id: '13-endpoint', label: '13', polarity: 'plus', left: 35, top: 174, lLeft: 49, lTop: 205 },
-  { id: '14-endpoint', label: '14', polarity: 'minus', left: 109, top: 174, lLeft: 122, lTop: 205 },
+  { id: '13-endpoint', label: '13', polarity: 'plus', left: 35, top: 165, lLeft: 49, lTop: 200 },
+  { id: '14-endpoint', label: '14', polarity: 'minus', left: 104.5, top: 166, lLeft: 119, lTop: 200 },
 ]
 
 const ammeter4Terminals = [
-  { id: '15-endpoint', label: '15', polarity: 'plus', left: 35, top: 174, lLeft: 49, lTop: 205 },
-  { id: '16-endpoint', label: '16', polarity: 'minus', left: 109, top: 174, lLeft: 122, lTop: 205 },
+  { id: '15-endpoint', label: '15', polarity: 'plus', left: 35, top: 164.5, lLeft: 49, lTop: 200 },
+  { id: '16-endpoint', label: '16', polarity: 'minus', left: 104.5, top: 165, lLeft: 119, lTop: 200 },
 ]
 
-/* --- CENTER & BOTTOM COMPONENTS --- */
 const resistorTerminals = [
-  { id: '17-endpoint', label: '17', polarity: 'plus', left: 10, top: 60, lLeft: 10, lTop: 90 },
-  { id: '18-endpoint', label: '18', polarity: 'minus', left: 180, top: 60, lLeft: 180, lTop: 90 },
+  { id: '17-endpoint', label: '17', polarity: 'plus', left: 40, top: 90, lLeft: 52, lTop: 122 },
+  { id: '18-endpoint', label: '18', polarity: 'minus', left: 280, top: 90, lLeft: 293, lTop: 122 },
 ]
 
 const inductorTerminals = [
-  { id: '19-endpoint', label: '19', polarity: 'plus', left: 30, top: 100, lLeft: 30, lTop: 130 },
-  { id: '20-endpoint', label: '20', polarity: 'minus', left: 80, top: 100, lLeft: 80, lTop: 130 },
+  { id: '19-endpoint', label: '19', polarity: 'plus', left: 124, top: 218, lLeft: 136, lTop: 252 },
+  { id: '20-endpoint', label: '20', polarity: 'minus', left: 167, top: 218, lLeft: 181, lTop: 252 },
 ]
 
 const capacitorTerminals = [
-  { id: '21-endpoint', label: '21', polarity: 'plus', left: 20, top: 120, lLeft: 20, lTop: 150 },
-  { id: '22-endpoint', label: '22', polarity: 'minus', left: 70, top: 120, lLeft: 70, lTop: 150 },
+  { id: '21-endpoint', label: '21', polarity: 'plus', left: 120, top: 242, lLeft: 133, lTop: 278 },
+  { id: '22-endpoint', label: '22', polarity: 'minus', left: 155, top: 242, lLeft: 171, lTop: 278 },
 ]
 
 const variacTerminals = [
-  { id: '23-endpoint', label: '23', polarity: 'plus', left: 180, top: 30, lLeft: 210, lTop: 30 },
-  { id: '24-endpoint', label: '24', polarity: 'minus', left: 220, top: 30, lLeft: 250, lTop: 30 },
-  { id: '25-endpoint', label: '25', polarity: 'plus', left: 180, top: 140, lLeft: 210, lTop: 140 },
-  { id: '26-endpoint', label: '26', polarity: 'minus', left: 220, top: 140, lLeft: 250, lTop: 140 },
+  { id: '23-endpoint', label: '23', polarity: 'plus', left: 213, top: 65, lLeft: 222, lTop: 108 },
+  { id: '24-endpoint', label: '24', polarity: 'minus', left: 283, top: 65, lLeft: 301, lTop: 108 },
+  { id: '25-endpoint', label: '25', polarity: 'plus', left: 213, top: 156, lLeft: 222, lTop: 198 },
+  { id: '26-endpoint', label: '26', polarity: 'minus', left: 283, top: 156, lLeft: 301, lTop: 198 },
 ]
 
 const renderTerminals = (terminals) => (
@@ -102,11 +100,11 @@ const renderTerminals = (terminals) => (
   ))
 )
 
-const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, switchOn }) => (
+const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, switchOn, setSwitchOn, setVoltage, voltage, isRVerified }) => ( 
+  
   <section className="equipment-panel">
 
-    {/* 1. MCB */}
-    <div className="equipment-item relative">
+    <div className="equipment-item">
       <MCB
         mcbOn={powerOn}
         setMcbOn={setPowerOn}
@@ -116,68 +114,67 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
       {renderTerminals(mcbTerminals)}
     </div>
 
-    {/* 2. V1 */}
-    <div className="equipment-item relative">
-      <Voltmeter label="V1" value={readings.v} switchOn={switchOn} />
+    <div className="equipment-item">
+      <Voltmeter label="V1" value={voltage} switchOn={powerOn && switchOn} />
       {renderTerminals(voltmeterTerminals)}
     </div>
 
-    {/* 3. A1 */}
-    <div className="equipment-item relative">
-      <Ammeter label="A1" value={readings.i1} switchOn={switchOn} />
+   <div className="equipment-item">
+      <Ammeter label="A1" value={readings.i1 || 0} switchOn={powerOn && switchOn} />
       {renderTerminals(ammeterTerminals)}
     </div>
 
-    {/* 4. W1 */}
-    <div className="equipment-item relative">
-      <Wattmeter label="W1" value={readings.power} switchOn={switchOn} />
+    <div className="equipment-item">
+      <Wattmeter label="W1" value={readings.i2 || 0} switchOn={powerOn && switchOn} />
       {renderTerminals(wattmeterTerminals)}
     </div>
 
-    {/* 5. A2 */}
-    <div className="equipment-item relative">
-      <Ammeter label="A2" value={readings.i2} switchOn={switchOn} />
+    <div className="equipment-item">
+      <Ammeter label="A2" value={readings.iR || 0} switchOn={powerOn && switchOn} />
       {renderTerminals(ammeter2Terminals)}
     </div>
 
-    {/* 6. A3 */}
-    <div className="equipment-item relative">
-      <Ammeter label="A3" value={readings.i3 || 0} switchOn={switchOn} />
+    <div className="equipment-item">
+      <Ammeter label="A3" value={readings.iL || 0} switchOn={powerOn && switchOn} />
       {renderTerminals(ammeter3Terminals)}
     </div>
 
-    {/* 7. A4 */}
-    <div className="equipment-item relative">
-      <Ammeter label="A4" value={readings.i4 || 0} switchOn={switchOn} />
+    <div className="equipment-item">
+      <Ammeter label="A4" value={readings.iC || 0} switchOn={powerOn && switchOn} />
       {renderTerminals(ammeter4Terminals)}
     </div>
 
-    {/* 8. Resistor */}
-    {/* 8. Resistor */}
-<div className="equipment-item relative">
-  <Resistor 
-    isVerified={isVerified} 
-    mcbOn={powerOn} 
-    variacOn={switchOn} 
-    voltage={readings.v} 
-  />
-  {renderTerminals(resistorTerminals)}
-</div>
-    {/* 9. Capacitor */}
-    <div className="equipment-item relative">
-      {/* <Capacitor /> */}
+    <div className="equipment-item">
+      <Resistor 
+        isVerified={isVerified} 
+        mcbOn={powerOn} 
+        variacOn={switchOn} 
+        voltage={voltage} 
+        isRVerified={isRVerified} 
+      />
+      {renderTerminals(resistorTerminals)}
+    </div>
+    
+    <div className="equipment-item">
+      <Capacitor />
       {renderTerminals(capacitorTerminals)}
     </div>
-
-    {/* 10. Inductor */}
-    <div className="equipment-item relative">
-      {/* <Inductor /> */}
+    
+    <div className="equipment-item">
+      <Inductor />
       {renderTerminals(inductorTerminals)}
     </div>
-
-    {/* 11. Variac */}
-    <div className="equipment-item relative">
-      {/* <Variac /> */}
+   
+    <div className="equipment-item">
+      <Variac 
+        voltage={voltage}
+        setVoltage={setVoltage}
+        mcbOn={powerOn}
+        isVerified={isVerified}
+        selected={selected}
+        variacOn={switchOn}
+        setVariacOn={setSwitchOn}
+      />
       {renderTerminals(variacTerminals)}
     </div>
     

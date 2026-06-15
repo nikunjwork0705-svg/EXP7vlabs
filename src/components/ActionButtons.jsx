@@ -1,9 +1,9 @@
 import SectionCard from './SectionCard.jsx'
 import {
+  ActionButtonsIcon,
   AddIcon,
   AiGuide,
   AutoConnectIcon,
-  CalculateIcon,
   CheckIcon,
   PrintIcon,
   ResetIcon,
@@ -47,13 +47,6 @@ const buttons = [
     id: 'add-button', 
   },
   {
-    label: 'CALCULATE',
-    tone: 'action-button--grey',
-    Icon: CalculateIcon,
-    handlerName: 'onCalculate',
-    id: 'calculate-button', 
-  },
-  {
     label: 'RESET',
     tone: 'action-button--red',
     Icon: ResetIcon,
@@ -70,7 +63,8 @@ const buttons = [
 ]
 
 const ActionButtons = ({
-  disabledButtons = {},
+  activeButtons = {},   
+  disabledButtons = {}, 
   onAdd,
   onCheck,
   onPrint,
@@ -92,22 +86,33 @@ const ActionButtons = ({
   }
 
   return (
-    <SectionCard className="h-[261.5px]" icon="buttons" title="ACTION BUTTONS">
+    <SectionCard 
+      className="h-[261.5px]" 
+      icon={<ActionButtonsIcon />} 
+      title="ACTION BUTTONS"
+    >
       <div id="action-buttons-panel" className="action-buttons__grid">
         
-        {buttons.map(({ label, tone, Icon, handlerName, id }) => (
-          <button
-            key={label}
-            id={id} 
-            type="button"
-            className={`action-button ${tone}`}
-            onClick={handlers[handlerName]}
-            disabled={disabledButtons[id]} 
-          >
-            <Icon />
-            <span>{label}</span>
-          </button>
-        ))}
+        {buttons.map(({ label, tone, Icon, handlerName, id }) => {
+          const isDisabled = disabledButtons[handlerName];
+          const isActive = activeButtons[handlerName];
+
+          return (
+            <button
+              key={label}
+              id={id} 
+              type="button"
+              className={`action-button ${tone} 
+                ${isActive ? 'ring-4 ring-cyan-400 shadow-lg scale-95' : ''}
+              `}
+              onClick={handlers[handlerName]}
+              disabled={isDisabled} 
+            >
+              <Icon />
+              <span>{label}</span>
+            </button>
+          )
+        })}
 
       </div>
     </SectionCard>

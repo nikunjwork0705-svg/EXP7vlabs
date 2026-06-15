@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 
-const SPOTLIGHT_PADDING = 12
+const SPOTLIGHT_PADDING = 5
 const round = (value) => Math.round(value)
 
 const getSpotlightBox = (rect) => {

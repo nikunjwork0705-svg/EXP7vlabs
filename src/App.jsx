@@ -9,19 +9,33 @@ import InstructionsTab from './components/InstructionsTab.jsx'
 import { EXPERIMENT_ALERTS } from './alerts/experimentStepAlerts.js'
 import { useLabAlerts } from './alerts/useLabAlerts.js'
 import WalkthroughProvider from './walkthrough/WalkthroughProvider.jsx'
+import WalkthroughStartButton from './walkthrough/components/WalkthroughStartButton.jsx'
 import CalculationsBoard from './components/CalculationsBoard.jsx'
+import { useAiGuideNarration } from './aiGuide/useAiGuideNarration.js'
+
 import { calculateReadings } from './utils/circuitMath.js'
-
-
+import ReportControls from './components/ReportControls.jsx'
+import { generateKclReport } from './utils/reportGenerator.js'
 
 const BASE_WIDTH = 1440
 const BASE_HEIGHT = 880
 const CALC_SECTION_GAP = 28
-const CALC_SECTION_HEIGHT = 800
-
+const CALC_SECTION_HEIGHT = 460
 const CONTENT_HEIGHT = BASE_HEIGHT + CALC_SECTION_GAP + CALC_SECTION_HEIGHT
 const PANEL_MAX_SCALE = 0.9
 const PANEL_VIEWPORT_MARGIN = 24
+
+const CORRECT_CONNECTIONS = [
+  ['1-endpoint', '23-endpoint'], ['2-endpoint', '24-endpoint'],
+  ['3-endpoint', '25-endpoint'], ['4-endpoint', '26-endpoint'],
+  ['5-endpoint', '25-endpoint'], ['6-endpoint', '9-endpoint'],
+  ['9-endpoint', '10-endpoint'], ['7-endpoint', '18-endpoint'],
+  ['8-endpoint', '11-endpoint'], ['11-endpoint', '13-endpoint'],
+  ['13-endpoint', '15-endpoint'], ['12-endpoint', '17-endpoint'],
+  ['18-endpoint', '20-endpoint'], ['14-endpoint', '19-endpoint'],
+  ['16-endpoint', '21-endpoint'], ['20-endpoint', '22-endpoint'],
+  ['26-endpoint', '7-endpoint']
+];
 
 const getScale = () => {
   if (typeof window === 'undefined') return 1
@@ -31,121 +45,136 @@ const getScale = () => {
 }
 
 const App = () => {
+  const { clearAlerts, showAlert, confirmAlert } = useLabAlerts()
+
   const [scale, setScale] = useState(getScale)
   const [r1, setR1] = useState(10)
   const [r2, setR2] = useState(10)
   const [r3, setR3] = useState(10)
-  const [voltage, setVoltage] = useState(10)
+  const [voltage, setVoltage] = useState(0)
   const [powerOn, setPowerOn] = useState(false)
   const [observations, setObservations] = useState([])
-  const [, setStatus] = useState('Adjust the sliders, click CHECK and observe the readings.')
+  const [status, setStatus] = useState('Adjust the sliders, click CHECK and observe the readings.')
 
   const [autoConnect, setAutoConnect] = useState(false)
   const [checkRequest, setCheckRequest] = useState(0)
   const [connectionsVerified, setConnectionsVerified] = useState(false)
   const [resetRequest, setResetRequest] = useState(0)
   const [calculateRequest, setCalculateRequest] = useState(0)
-
+  const [reportGenerated, setReportGenerated] = useState(false)
   const [isInstructionsOpen, setIsInstructionsOpen] = useState(false)
-
   const [connections, setConnections] = useState([])
   const [selected, setSelected] = useState('null')
-
   const [variacOn, setVariacOn] = useState(false)
   const [switchOn, setSwitchOn] = useState(false)
+  const hasAlerted24V = useRef(false);
+  const [wrongAttempts, setWrongAttempts] = useState(0)
+
+  // --- NEW STATES FOR CALCULATIONS BOARD ---
+  const [isRCorrect, setIsRCorrect] = useState(false)
+  const [verifiedCalcValues, setVerifiedCalcValues] = useState(null)
+  
+  const [currentStep, setCurrentStep] = useState(1);
+  const MIN_READINGS = 1;
+  const readingCount = observations.length;
+  const sessionStart = useMemo(() => new Date().toISOString(), []);
 
   useEffect(() => {
-    const handleResize = () => setScale(getScale())
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    if (sessionStorage.getItem('showResetAlert')) {
+      setTimeout(() => {
+        showAlert({ title: 'Simulation Reset', description: 'The Simulation has been RESET. You can Start again.', type: 'info', icon: '🔄', placement: 'center', duration: 3000 });
+      }, 100);
+      sessionStorage.removeItem('showResetAlert');
+    }
+  }, [showAlert]);
+
+  useEffect(() => {
+    let timeoutId = null;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => setScale(getScale()), 100);
+    };
+    setScale(getScale());
+    window.addEventListener('resize', handleResize);
+    return () => { window.removeEventListener('resize', handleResize); clearTimeout(timeoutId); };
+  }, []);
   
-  const readings = useMemo(
-    () => calculateReadings({
-      voltage: powerOn ? voltage : 0,
-      powerOn,
-      selected
-    }),
-    [voltage, powerOn, selected],
-  )
+  useEffect(() => {
+    if (powerOn && connectionsVerified && currentStep === 3) { setCurrentStep(4); } 
+    else if (!powerOn && currentStep > 2) { setCurrentStep(3); }
+  }, [powerOn, connectionsVerified, currentStep]);
+
+  useEffect(() => {
+    if (switchOn && powerOn && currentStep === 4) { setCurrentStep(5); } 
+    else if (!switchOn && currentStep > 3) { setCurrentStep(4); }
+  }, [switchOn, powerOn, currentStep]);
+
+  useEffect(() => {
+    if (voltage === 24 && !hasAlerted24V.current) {
+      hasAlerted24V.current = true;
+      setCurrentStep(6);
+      setTimeout(() => {
+        showAlert({ title: 'Voltage Reached', description: 'Autotransformer voltage successfully set to 24V. Now, Click ADD button to add an Observation to the Table.', type: 'success', icon: '⚡', placement: 'center', duration: 3000 });
+      }, 50);
+      setStatus("Variac voltage set to 24V.");
+    } else if (voltage === 0) {
+      hasAlerted24V.current = false;
+    }
+  }, [voltage, showAlert]);
+
+  const readings = useMemo(() => calculateReadings({ voltage: powerOn ? voltage : 0, powerOn, selected }), [voltage, powerOn, selected])
+
+  const handleAiGuideStart = useCallback(() => setStatus('AI Guide narration started.'), [])
+  const handleAiGuideFinish = useCallback(() => setStatus('AI Guide narration completed.'), [])
+  const handleAiGuideError = useCallback(() => setStatus('AI Guide narration could not start. Add audio files or use a browser with speech synthesis.'), [])
+
+  const { isPlaying: aiGuidePlaying, start: startAiGuide, stop: stopAiGuide } = useAiGuideNarration({
+    onError: handleAiGuideError, onFinish: handleAiGuideFinish, onStart: handleAiGuideStart,
+  })
+
+  const handleAiGuide = useCallback(() => {
+    if (aiGuidePlaying) { stopAiGuide(); setStatus('AI Guide narration stopped.'); return }
+    startAiGuide()
+  }, [aiGuidePlaying, startAiGuide, stopAiGuide])
 
   const recordObservation = (source) => {
-    if (!['CFL', 'Lamp', 'LED', 'Tubelight'].includes(selected)) {
-      alert("Please select a valid load before taking a reading!");
-      return;
-    }
-
-    if (!connectionsVerified) {
-      alert("Please verify your connections using the CHECK button first!")
-      return
-    }
-    if (!powerOn) {
-      alert("Please turn ON the MCB first!")
-      return
-    }
-
-    if (!variacOn) {
-      alert("Please turn ON the Variac power button first!")
-      return
-    }
-
-    if (voltage !== 230) {
-      alert("Please set the Variac to 230V first!")
-      return
-    }
-
-    if (!switchOn) {
-      alert("Turn on the Switch first then add reading to the observation table!")
-      return
-    }
-
-    const isDuplicate = observations.some((row) => row.load === selected);
-
-    if (isDuplicate) {
-      alert(`You have already recorded the reading for the ${selected}! Please change the load to take a new reading.`);
-      return;
-    }
+    if (!connectionsVerified) { showAlert({ title: 'Action Required', description: 'Please verify your connections using the CHECK button first.', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true }); return }
+    if (!powerOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the MCB first.', type: 'warning', icon: '⚡', placement: 'center', requiresConfirmation: true }); return }
+    if (!switchOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the Autotransformer power button first.', type: 'warning', icon: '🔌', placement: 'center', requiresConfirmation: true }); return }
+    if (voltage !== 24) { showAlert({ title: 'Action Required', description: 'Please rotate the Autotransformer first.', type: 'warning', icon: '🎛️', placement: 'center', requiresConfirmation: true }); return }
 
     setObservations((current) => {
       const nextId = current.length > 0 ? current[current.length - 1].id + 1 : 1;
-      const nextObservation = {
-        id: nextId,
-        load: selected,
-        voltage: powerOn ? 230 : 0,
-        i1: readings.i1,
-        i2: readings.i2,
-        i3: 0,
-      };
+      const nextObservation = { id: nextId, voltage: 24, current: 0.242, iL: 0.382, iR: 0.240, iC: 0.354, power: 5.76 };
       return [...current.slice(), nextObservation];
     });
+
+    setCurrentStep(7);
+    showAlert({ title: 'Success', description: 'Readings added to the observation table.', type: 'success', icon: '📊', placement: 'top-right' });
   }
 
   const handleDeleteObservation = () => {
     setObservations((current) => {
-      if (current.length === 0) {
-        setStatus('No observations to delete.')
-        return current
-      }
+      if (current.length === 0) { setStatus('No observations to delete.'); return current }
       setStatus('Last observation deleted from the table.')
       return current.slice(0, -1)
     })
   }
 
   const resetSimulation = () => {
+    stopAiGuide()
+    clearAlerts()
+    setCurrentStep(1);
+    sessionStorage.setItem('showResetAlert', 'true');
     window.location.reload()
   }
 
   const handleCalculate = () => {
-    if (observations.length === 0) {
-      alert('Please add a reading to the observation table first!')
-      return
-    }
+    if (observations.length === 0) { showAlert({ title: 'Action Required', description: 'Please add a reading to the observation table first!', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true }); return }
     setObservations((current) => {
       const updated = [...current]
       const lastIndex = updated.length - 1
       const lastRow = updated[lastIndex]
-
       if (lastRow.voltage > 0 && lastRow.i1 > 0) {
         const calculatedPf = lastRow.i2 / (lastRow.voltage * lastRow.i1)
         updated[lastIndex] = { ...lastRow, i3: calculatedPf }
@@ -156,40 +185,93 @@ const App = () => {
     setStatus('Power factor computed based on the latest observation.')
   }
 
-  const handlePrint = () => window.print()
+  const handlePrint = () => {
+    showAlert({ title: 'Printing', description: 'Opening the Print Dialog...', type: 'info', icon: '🖨️', placement: 'top-right' });
+    setTimeout(() => { window.print(); }, 1000);
+  }
+
+  const handleGenerateReport = () => {
+    if (readingCount < MIN_READINGS) {
+      const remainingReadings = MIN_READINGS - readingCount
+      setStatus(`Add ${remainingReadings} more reading(s) before generating the report.`)
+      showAlert({ title: 'More Data Needed', description: `Please add ${remainingReadings} more reading(s) to the table before generating the report.`, type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+      return
+    }
+
+    if (!isRCorrect) {
+      setStatus('Please verify your calculations before generating the report.')
+      showAlert({ title: 'Verification Required', description: 'You must successfully verify your calculated values on the Calculations Board before generating the report.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+      return
+    }
+
+    // CRITICAL: We pass `verifiedCalcValues` which was saved from CalculationsBoard
+    const isSuccess = generateKclReport({
+      observations: observations,
+      resistances: { r1, r2, r3 }, 
+      sessionStart: sessionStart,
+      calcValues: verifiedCalcValues 
+    });
+
+    if (isSuccess) {
+      setReportGenerated(true)
+      setStatus('Experiment report generated successfully.')
+      showAlert({ title: 'Report Generated', description: 'Experiment report opened in a new tab!', type: 'success', icon: '✅', placement: 'center', duration: 3000 });
+    } else {
+      showAlert({ title: 'Popup Blocked', description: 'Your browser blocked the report from opening. Please allow popups for this site and try again.', type: 'error', icon: '❌', placement: 'center', requiresConfirmation: true });
+    }
+  }
+
+  const handleAutoConnect = () => {
+    setAutoConnect(true); setConnectionsVerified(false); setCurrentStep(2);
+    setStatus('Default connections added using jsPlumb. Click CHECK to validate and lock the circuit.')
+    setTimeout(() => { showAlert({ title: 'Autoconnect Complete', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', duration: 3000 }) }, 150);
+  }
+
+  const handleCheck = () => { setCheckRequest((current) => current + 1) }
 
   const handleCheckConnections = useCallback((result) => {
-    if (result.isCorrect) {
-      setConnectionsVerified(true)
-      setStatus('Right connections!')
-      alert('Right connections!')
-      return
-    }
-    setConnectionsVerified(false)
-    if (result.totalConnections === 0) {
-      setStatus('Please make the connections first.')
-      alert('Please make the connections first.')
-      return
-    }
-    setStatus(`Invalid connections. Correct matched points: ${result.matchedCount}; total wires: ${result.totalConnections}.`)
-    alert('Invalid Connections')
-  }, [])
+    if (!result || !result.rawConnections) return;
+    const currentConns = result.rawConnections;
+    const formatNode = (nodeId) => nodeId ? nodeId.toString().replace('-endpoint', '') : '';
+    const isSameConnection = (c1, c2) => {
+      if (!c1 || !c2) return false;
+      return (c1[0] === c2[0] && c1[1] === c2[1]) || (c1[0] === c2[1] && c1[1] === c2[0]);
+    };
 
-  const handleCheck = () => {
-    setCheckRequest((current) => current + 1)
-  }
-  const handleAutoConnect = () => {
-    const validLoads = ['CFL', 'Lamp', 'LED', 'Tubelight'];
+    const wrongConnections = [];
+    const missingConnections = [];
 
-    if (!validLoads.includes(selected)) {
-      alert("Please choose a load for the experiment first!")
-      return
+    currentConns.forEach(currConn => {
+      const isRight = CORRECT_CONNECTIONS.some(rightConn => isSameConnection(currConn, rightConn));
+      if (!isRight) { wrongConnections.push(`${formatNode(currConn[0])} - ${formatNode(currConn[1])}`); }
+    });
+
+    CORRECT_CONNECTIONS.forEach(rightConn => {
+      const isPresent = currentConns.some(currConn => isSameConnection(currConn, rightConn));
+      if (!isPresent) { missingConnections.push(`${formatNode(rightConn[0])} - ${formatNode(rightConn[1])}`); }
+    });
+
+    if (wrongConnections.length === 0 && missingConnections.length === 0) {
+      setConnectionsVerified(true); setCurrentStep(3); setStatus('Right connections. Now, turn ON the MCB.');
+      showAlert({ title: 'Connections Verified', description: 'All wires are placed correctly! You may now turn ON the MCB.', type: 'success', icon: '✅', placement: 'center', duration: 3000, confirmLabel: 'OK' });
+    } else {
+      setConnectionsVerified(false);
+      let wrongText = ''; let missingText = '';
+      if (wrongConnections.length > 0) {
+        if (wrongConnections.length === 1) { wrongText = `Wrong Connection: ${wrongConnections[0]}.`; } 
+        else { wrongText = `Wrong Connections: ${wrongConnections.map((conn, index) => `Connection ${index + 1}: ${conn}`).join(', ')}.`; }
+      }
+      if (missingConnections.length > 0) {
+        missingText = `Missing Connections: `;
+        const visibleMissing = missingConnections.slice(0, 3);
+        const hiddenCount = missingConnections.length - 3;
+        missingText += visibleMissing.map((conn, index) => `Connection ${index + 1}: ${conn}`).join(', ');
+        if (hiddenCount > 0) { missingText += ` and ${hiddenCount} more.`; } else { missingText += '.'; }
+      }
+      const finalDescription = [wrongText, missingText].filter(Boolean).join('\n\n');
+      showAlert({ title: 'Alert', description: finalDescription, type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true, confirmLabel: 'OK', dedupeKey: 'connection-check-error' });
     }
-
-    setAutoConnect(true)
-    setConnectionsVerified(false)
-    setStatus('Default connections added using jsPlumb. Click CHECK to validate and lock the circuit.')
-  }
+  }, [showAlert]);
 
   const scaledWidth = Math.ceil(BASE_WIDTH * scale)
   const scaledHeight = Math.ceil(CONTENT_HEIGHT * scale)
@@ -202,11 +284,16 @@ const App = () => {
 
             <main className="simulation-shell">
               <HeaderBoard />
+              <WalkthroughStartButton />
+
+              <span className="sr-only" role="status" aria-live="polite">{status}</span>
 
               <section className="workspace-grid">
 
                 <aside className="left-panel flex flex-col gap-1">
                   <ActionButtons
+                    activeButtons={{ onAiGuide: aiGuidePlaying }}
+                    disabledButtons={{ onAdd: false, onAutoConnect: connectionsVerified || powerOn, onCheck: connectionsVerified, onPlot: false, onPrint: false }}
                     onAdd={() => recordObservation('add')}
                     onCheck={handleCheck}
                     onDelete={handleDeleteObservation}
@@ -214,22 +301,34 @@ const App = () => {
                     onReset={resetSimulation}
                     onAutoConnect={handleAutoConnect}
                     onCalculate={handleCalculate}
+                    onAiGuide={handleAiGuide}
                     onInstruction={() => setIsInstructionsOpen(!isInstructionsOpen)}
                   />
 
-                  <div className="relative w-full flex-grow flex flex-col gap-6.5 mt-2">
+                  <div className="relative w-full flex-grow flex flex-col gap-6.5 mt-2.5">
 
-                    <ControlPanel observations={observations} />
+                    <ControlPanel observations={observations} wrongAttempts={wrongAttempts} />
+
+                    <div className="w-full flex justify-center mt-4 z-50">
+                      <ReportControls
+                        minReadings={MIN_READINGS}
+                        onGenerateReport={handleGenerateReport}
+                        readingCount={readingCount}
+                        reportGenerated={reportGenerated}
+                        isCalculationsVerified={isRCorrect} 
+                      />
+                    </div>
 
                     <InstructionsTab
                       isOpen={isInstructionsOpen}
                       toggleOpen={() => setIsInstructionsOpen(false)}
+                      currentStep={currentStep}
                     />
 
                   </div>
                 </aside>
 
-               <section className="right-panel">
+                <section className="right-panel">
                   <ConnectionLab
                     autoConnect={autoConnect}
                     checkRequest={checkRequest}
@@ -245,12 +344,12 @@ const App = () => {
                     setConnections={setConnections}
                     selected={selected}
                     setSelected={setSelected}
-                    setIsVerified={setConnectionsVerified} 
-                    
+                    setIsVerified={setConnectionsVerified}
                     variacOn={variacOn}
                     setVariacOn={setVariacOn}
                     switchOn={switchOn}
                     setSwitchOn={setSwitchOn}
+                    isRVerified={isRCorrect}
                   />
                 </section>
               </section>
@@ -258,8 +357,20 @@ const App = () => {
 
             <div style={{ width: '100%', marginTop: `${CALC_SECTION_GAP}px`, paddingBottom: '40px' }}>
               <CalculationsBoard
-                calculateRequest={calculateRequest}
-                latestObservation={observations.length > 0 ? observations[observations.length - 1] : null}
+                isVerified={connectionsVerified}
+                powerOn={powerOn}
+                switchOn={switchOn}
+                voltage={voltage}
+                observations={observations}
+                onWrongAttempt={() => setWrongAttempts(prev => prev + 1)}
+                
+                // CRITICAL FIX: Receives the boolean AND the values from CalculationsBoard
+                onRVerified={(status, values) => {
+                  setIsRCorrect(status);
+                  if (status) {
+                    setVerifiedCalcValues(values);
+                  }
+                }}
               />
             </div>
 

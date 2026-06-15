@@ -1,44 +1,29 @@
-export const calculateReadings = ({ voltage, powerOn, selected }) => {
-  // If power is off, voltage is 0, or no load is selected, meters read 0
-  if (!powerOn || voltage === 0 || !selected) {
-    return { i1: 0, i2: 0 };
+export const calculateReadings = ({ voltage, powerOn }) => {
+  if (!powerOn || voltage === 0) {
+    return { i1: 0, i2: 0, iL: 0, iR: 0, iC: 0 };
   }
 
-  let basePower = 0; // True Power in Watts
-  let pf = 1;        // Power Factor
+  const f = 50;         
+  const R = 100;        
+  const L = 0.20;       
+  const C = 47e-6;      // (47 µF)
 
-  switch (selected) {
-    case 'CFL':
-      basePower = 24; 
-      pf = 0.8843; 
-      break;
-    case 'Lamp':
-      basePower = 59.8; 
-      pf = 0.9630; 
-      break;
-    case 'LED':
-      basePower = 8; 
-      pf = 0.7729; 
-      break;
-    case 'Tubelight':
-      basePower = 52.8; 
-      pf = 0.7064;
-      break;
-    default:
-      return { i1: 0, i2: 0 };
-  }
+  const XL = 2 * Math.PI * f * L;       // ~62.832 Ω
+  const XC = 1 / (2 * Math.PI * f * C); // ~67.726 Ω
 
-  // Calculate how the Variac's voltage changes the current and power
-  const voltageRatio = voltage / 230;
-  
-  const truePower = basePower * (voltageRatio * voltageRatio); // Power scales quadratically
-  const apparentPowerBase = basePower / pf;
-  const currentBase = apparentPowerBase / 230;
-  
-  const current = currentBase * voltageRatio; // Current scales linearly
+  const IR = voltage / R;
+  const IL = voltage / XL;
+  const IC = voltage / XC;
+
+  const totalCurrent = Math.sqrt(Math.pow(IR, 2) + Math.pow(IL - IC, 2));
+
+  const truePower = voltage * IR; 
 
   return {
-    i1: Number(current.toFixed(3)),  // i1 is Amps (Current)
-    i2: Number(truePower.toFixed(2)) // i2 is Watts (True Power)
+    i1: Number(totalCurrent.toFixed(3)), // Ammeter reading (Total Current)
+    i2: Number(truePower.toFixed(2)),    // Wattmeter reading (True Power)
+    iL: Number(IL.toFixed(3)),           // Inductor branch current
+    iR: Number(IR.toFixed(3)),           // Resistor branch current
+    iC: Number(IC.toFixed(3)),           // Capacitor branch current
   };
 }

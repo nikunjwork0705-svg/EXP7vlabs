@@ -58,13 +58,15 @@ const LabAlertCard = ({ alert, onDismiss }) => {
 
   useEffect(() => {
     dispatchLabAlertEvent('lab-alert:sound', {
+            audio: alert.audio ?? alert.audioSource,
+
       id,
       sound: alert.sound ?? type,
       stepNumber,
       title,
       type,
     })
-  }, [alert.sound, id, stepNumber, title, type])
+  }, [alert.audio, alert.audioSource, alert.sound, id, stepNumber, title, type])
 
   useEffect(() => {
     if (!hasProgressTimer) {
@@ -124,7 +126,14 @@ const LabAlertCard = ({ alert, onDismiss }) => {
             <span>{type.toUpperCase()}</span>
           </div>
           <h2 id={titleId}>{title}</h2>
-          {description ? <p id={descriptionId}>{description}</p> : null}
+          
+          {/* ✅ Added whiteSpace: 'pre-line' so it respects \n characters! */}
+          {description ? (
+            <p id={descriptionId} style={{ whiteSpace: 'pre-line' }}>
+              {description}
+            </p>
+          ) : null}
+          
         </div>
 
         <div className="lab-alert-card__tools">
