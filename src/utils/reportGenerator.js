@@ -201,7 +201,6 @@ tr:nth-child(even) { background-color: #f8fbff; }
       <img src="${escapeHtml(virtualLabsLogoSrc)}" class="report-logo report-logo--virtual-labs" alt="Virtual Labs logo">
       <div class="report-title-block">
         <h1>Virtual Labs Simulation Report</h1>
-        <p class="report-subtitle">Basic Electrical Science Lab</p>
       </div>
       <img src="${escapeHtml(iitLogoSrc)}" class="report-logo report-logo--iit" alt="Indian Institute of Technology Roorkee logo">
     </div>
@@ -212,7 +211,7 @@ tr:nth-child(even) { background-color: #f8fbff; }
         <p class="report-stamp">Generated on ${escapeHtml(reportDateText)}</p>
       </div>
       <p class="report-experiment-label">Experiment Title</p>
-      <p class="report-experiment-title">To Study and Measure the Voltage, Current, Power and Power Factor in a Parallel RLC Circuit</p>
+      <p class="report-experiment-title">To Study and measure the Voltage, Current, Power and Power Factor in a Parallel RLC Circuit</p>
       <div class="info-grid">
         <div class="info-card"><span class="label">Start Time:</span>${escapeHtml(startTimeText)}</div>
         <div class="info-card"><span class="label">End Time:</span>${escapeHtml(endTimeText)}</div>
