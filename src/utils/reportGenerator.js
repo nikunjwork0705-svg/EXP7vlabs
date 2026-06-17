@@ -227,19 +227,19 @@ tr:nth-child(even) { background-color: #f8fbff; }
 
       <h3>Components and Key Parameters</h3>
       <ul class="two-column-list">
-        <li>AC power supply</li>
-        <li>MCB</li>
-        <li>AC Voltmeter for total voltage V</li>
-        <li>AC Ammeter (A1) for total current</li>
-        <li>AC Ammeter (A2) for current across Resistor</li>
-        <li>AC Ammeter (A3) for current across Inductor</li>
-        <li>AC Ammeter (A4) for current across Capacitor</li>
-        <li>AC Wattmeter for total wattage W</li>
+        <li>AC power supply (Range: 0-50 V)</li>
+        <li>MCB (Range: 5 A)</li>
+        <li>AC Voltmeter for total voltage V (Range: 0-50 V)</li>
+        <li>AC Ammeter (A1) for total current (Range: 0-1 A)</li>
+        <li>AC Ammeter (A2) for current across Resistor (Range: 0-1 A)</li>
+        <li>AC Ammeter (A3) for current across Inductor (Range: 0-1 A)</li>
+        <li>AC Ammeter (A4) for current across Capacitor (Range: 0-1 A)</li>
+        <li>AC Wattmeter for total wattage W (Range: 0-50 W)</li>
         <li>Resistor R: 100 &Omega;</li>
-        <li>Autotransformer for varying the Voltage</li>
-        <li>NonPolar Capacitor</li>
-        <li>Inductor</li>
-        <li>Connecting leads</li>
+        <li>Autotransformer for varying the Voltage (Range: 0-50 V)</li>
+        <li>NonPolar Capacitor (Range: 10-50 µF)</li>
+        <li>Inductor (Range: 0.1-1 H)</li>
+        <li>Connecting leads (Rating: 5A)</li>
       </ul>
 
       <h3>Calculation Formulae</h3>
