@@ -15,10 +15,9 @@ const ControlPanel = ({
 
   return (
     <div className="flex flex-col gap-6 relative">
-
       {/* THIS IS THE FIX: We wrap the SectionCard in a div with the ID */}
       <div id="control-panel">
-        <SectionCard className="h-[212px]" icon="sliders" title="FORMULAS">
+        <SectionCard className="h-[212px]" icon="sliders" title="MATHEMATICAL EXPRESSIONS">
           <div className="flex flex-col gap-[14px] px-[26px] pt-[20px]">
 
             <button
@@ -27,7 +26,7 @@ const ControlPanel = ({
               onMouseLeave={() => setShowFormulaModal(false)}
               onClick={() => setShowFormulaModal(!showFormulaModal)}
             >
-              Formula Used
+              Formulas
             </button>
 
             <button
@@ -41,7 +40,7 @@ const ControlPanel = ({
                 }
               }}
             >
-              Corrected Values {isUnlocked ? (showValuesModal ? ' ' : ' ') : ' '}
+              Evaluated Values {isUnlocked ? (showValuesModal ? ' ' : ' ') : ' '}
             </button>
 
           </div>

@@ -231,7 +231,7 @@ export const EXPERIMENT_ALERTS = {
   },
   preparingReport: {
     description: 'The print view is being prepared from the current observations.',
-    duration: 2000,
+    duration: 1000,
     icon: '📊',
     stepNumber: 10,
     target: '#print-button',

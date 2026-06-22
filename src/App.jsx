@@ -72,6 +72,7 @@ const App = () => {
 
   // --- NEW STATES FOR CALCULATIONS BOARD ---
   const [isRCorrect, setIsRCorrect] = useState(false)
+  const [isAllCalculationsVerified, setIsAllCalculationsVerified] = useState(false) // Controls the Report Button
   const [verifiedCalcValues, setVerifiedCalcValues] = useState(null)
   
   const [currentStep, setCurrentStep] = useState(1);
@@ -186,8 +187,14 @@ const App = () => {
   }
 
   const handlePrint = () => {
-    showAlert({ title: 'Printing', description: 'Opening the Print Dialog...', type: 'info', icon: '🖨️', placement: 'top-right' });
-    setTimeout(() => { window.print(); }, 1000);
+    window.print();
+    showAlert({ 
+      title: 'Printing', 
+      description: 'Generating Print View...', 
+      type: 'info', 
+      icon: '🖨️', 
+      placement: 'top-right' 
+    });
   }
 
   const handleGenerateReport = () => {
@@ -198,13 +205,13 @@ const App = () => {
       return
     }
 
-    if (!isRCorrect) {
-      setStatus('Please verify your calculations before generating the report.')
-      showAlert({ title: 'Verification Required', description: 'You must successfully verify your calculated values on the Calculations Board before generating the report.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+    // CHECK ALL CALCULATIONS, NOT JUST RESISTOR
+    if (!isAllCalculationsVerified) {
+      setStatus('Please verify ALL calculations before generating the report.')
+      showAlert({ title: 'Verification Required', description: 'You must successfully verify ALL calculated values on the Calculations Board before generating the report.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
       return
     }
 
-    // CRITICAL: We pass `verifiedCalcValues` which was saved from CalculationsBoard
     const isSuccess = generateKclReport({
       observations: observations,
       resistances: { r1, r2, r3 }, 
@@ -315,7 +322,7 @@ const App = () => {
                         onGenerateReport={handleGenerateReport}
                         readingCount={readingCount}
                         reportGenerated={reportGenerated}
-                        isCalculationsVerified={isRCorrect} 
+                        isCalculationsVerified={isAllCalculationsVerified} // Controls Button State
                       />
                     </div>
 
@@ -349,7 +356,7 @@ const App = () => {
                     setVariacOn={setVariacOn}
                     switchOn={switchOn}
                     setSwitchOn={setSwitchOn}
-                    isRVerified={isRCorrect}
+                    isRVerified={isRCorrect} // Controls Resistor Image
                   />
                 </section>
               </section>
@@ -364,10 +371,11 @@ const App = () => {
                 observations={observations}
                 onWrongAttempt={() => setWrongAttempts(prev => prev + 1)}
                 
-                // CRITICAL FIX: Receives the boolean AND the values from CalculationsBoard
-                onRVerified={(status, values) => {
-                  setIsRCorrect(status);
-                  if (status) {
+                // Passes up BOTH flags separately
+                onRVerified={(rCorrect, allCorrect, values) => {
+                 setIsRCorrect(prev => prev ? true : rCorrect);
+                  setIsAllCalculationsVerified(allCorrect);
+                  if (allCorrect) {
                     setVerifiedCalcValues(values);
                   }
                 }}

@@ -1,4 +1,5 @@
 import React from 'react'
+// Ensure these paths are exactly correct for your project folder structure
 import resistorImg0 from '../assets/0ohm.png' 
 import resistorImg100 from '../assets/100ohm.png'
 

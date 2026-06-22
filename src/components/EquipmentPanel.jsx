@@ -100,8 +100,8 @@ const renderTerminals = (terminals) => (
   ))
 )
 
-const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, switchOn, setSwitchOn, setVoltage, voltage, isRVerified }) => ( 
-  
+const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, switchOn, setSwitchOn, setVoltage, voltage, isRVerified }) => (
+
   <section className="equipment-panel">
 
     <div className="equipment-item">
@@ -119,7 +119,7 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
       {renderTerminals(voltmeterTerminals)}
     </div>
 
-   <div className="equipment-item">
+    <div className="equipment-item">
       <Ammeter label="A1" value={readings.i1 || 0} switchOn={powerOn && switchOn} />
       {renderTerminals(ammeterTerminals)}
     </div>
@@ -145,28 +145,28 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
     </div>
 
     <div className="equipment-item">
-      <Resistor 
-        isVerified={isVerified} 
-        mcbOn={powerOn} 
-        variacOn={switchOn} 
-        voltage={voltage} 
-        isRVerified={isRVerified} 
+      <Resistor
+        isVerified={isVerified}
+        mcbOn={powerOn}
+        variacOn={switchOn}
+        voltage={voltage}
+        isRVerified={isRVerified} // 👈 THIS IS THE PROP THE RESISTOR COMPONENT USES
       />
       {renderTerminals(resistorTerminals)}
     </div>
-    
+
     <div className="equipment-item">
       <Capacitor />
       {renderTerminals(capacitorTerminals)}
     </div>
-    
+
     <div className="equipment-item">
       <Inductor />
       {renderTerminals(inductorTerminals)}
     </div>
-   
+
     <div className="equipment-item">
-      <Variac 
+      <Variac
         voltage={voltage}
         setVoltage={setVoltage}
         mcbOn={powerOn}
@@ -177,7 +177,7 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
       />
       {renderTerminals(variacTerminals)}
     </div>
-    
+
   </section>
 )
 

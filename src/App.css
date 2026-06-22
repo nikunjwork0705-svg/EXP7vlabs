@@ -20,7 +20,7 @@
   top: 0;
   left: 0;
   width: 1440px;
-  height: 2218;
+  height: 2218px;
   transform-origin: top left;
   backface-visibility: hidden;
   contain: layout paint style;
@@ -283,7 +283,7 @@
 }
 
 .section-card__line {
-  width: 84px;
+  width: 40px;
   height: 1px;
   background: rgba(96, 63, 38, 0.3);
 }
@@ -411,7 +411,8 @@
 .observation-table-wrap {
   position: relative;
   z-index: 1;
-   margin: 33px auto 14px;  /* small top spacing */
+  margin: 33px auto 14px;
+  /* small top spacing */
   width: calc(100% - 34px);
 
   /* ❌ remove flex */
@@ -422,7 +423,8 @@
   border: 1px solid rgba(96, 61, 35, 0.34);
   border-radius: 8px;
   background: rgba(255, 247, 236, 0.78);
-  overflow: hidden;   /* 🔥 IMPORTANT */
+  overflow: hidden;
+  /* 🔥 IMPORTANT */
 }
 
 /* ✅ TABLE */
@@ -434,13 +436,14 @@
   /* table-layout: fixed; */
   color: #3d2416;
   font-size: 16px;
-  
+
 }
 
 /* ✅ EQUAL COLUMN WIDTH + CENTER ALIGN */
 .observation-table th,
 .observation-table td {
-  width: calc(100% / 7);   /* 7 columns */
+  width: calc(100% / 7);
+  /* 7 columns */
   text-align: center;
   vertical-align: middle;
 }
@@ -1359,4 +1362,77 @@ input:focus-visible {
   top: 52px !important;
   left: 121px !important;
   z-index: 10;
+}
+
+/* =========================================
+   PRINT STYLES - PERFECT 1-PAGE WYSIWYG
+   ========================================= */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html, body, #app-wrapper, #app-viewport {
+    background-color: #2b170d !important;
+    width: 100% !important; 
+    height: 1400px !important; 
+    min-height: 1400px !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #app-scale {
+    position: absolute !important;
+    left: 50% !important; /* Move starting point to the dead center of the paper */
+    
+    /* 2. Scale 0.56 makes it exactly as tall as an A4 paper. 
+          translateX(-50%) shifts it perfectly into the center! */
+    transform: scale(0.49) translateX(-50%) !important; 
+    transform-origin: top left !important;
+    contain: none !important;
+    backface-visibility: visible !important;
+    transform-style: flat !important;
+  }
+
+  /* 🚀 FIX 1: RESTORE ORIGINAL WOOD BACKGROUND 🚀 */
+  /* We explicitly pass ONLY the image to the printer, dropping the gradients 
+     that cause Chrome's print spooler to fail and hide the wood. */
+  .simulation-shell {
+    background-image: url("./assets/ekaterina-novitskaya-KugwNl9jX1Q-unsplash.jpg") !important;
+    background-size: cover !important;
+    background-position: center !important;
+    isolation: auto !important;
+    overflow: visible !important;
+  }
+
+  /* 🚀 FIX 2: RESTORE ORIGINAL EQUIPMENT PANEL (Screws & Shading) 🚀 */
+  /* We leave the main panel background completely alone! We ONLY hide the 
+     invisible ::before/::after elements because THEY caused the black diagonal void. */
+  .equipment-panel::after, 
+  .equipment-panel::before,
+  .simulation-shell::before {
+    display: none !important; 
+  }
+
+  /* Hide ALL UI popups, modals, and walkthrough overlays completely */
+  .formula-modal,
+  .action-instructions-panel,
+  .report-button-container,
+  .walkthrough-overlay,
+  [role="alert"],
+  .modal,
+  .alert-overlay,
+  #warningModal {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
 }
