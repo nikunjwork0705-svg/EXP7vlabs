@@ -198,8 +198,8 @@ const FIELD_RANGES = {
   c: { min: 10, max: 100, name: "Capacitance (C)" },
   z: { min: 80, max: 120, name: "Impedance (Z)" },
   powerFactor: { min: 0.1, max: 1.0, name: "Power Factor (cos Φ)" },
-  s: { min: 1.0, max: 10.0, name: "Apparent Power (S)" },
-  q: { min: 0.0, max: 2.0, name: "Reactive Power (Q)" }
+  s: { min: 1.0, max: 7.0, name: "Apparent Power (S)" },
+  q: { min: 0.1, max: 2.0, name: "Reactive Power (Q)" }
 };
 
 const CalculationsBoard = ({ 
