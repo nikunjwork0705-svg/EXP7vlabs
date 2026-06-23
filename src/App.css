@@ -1756,6 +1756,7 @@ input, button {
     inset 0 -8px 13px rgba(0, 0, 0, 0.2),
     0 4px 7px rgba(37, 22, 13, 0.42);
   transition: transform 160ms ease, filter 160ms ease;
+  cursor: pointer;
 }
 
 .action-button:hover {
