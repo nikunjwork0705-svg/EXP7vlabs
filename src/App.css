@@ -1807,11 +1807,6 @@ input, button {
   background: linear-gradient(180deg, #23b7e3, #075a9a);
 }
 
-.action-button--orange {
-  font-size: 11.5px;
-  background: linear-gradient(180deg, #ffbd2c, #e27500);
-}
-
 .action-button--red {
   background: linear-gradient(180deg, #f85b51, #b51a14);
 }
@@ -1836,9 +1831,25 @@ input, button {
 }
 
 .action-button--yellow {
-  font-size: 10.5px;
-  background: linear-gradient(180deg, orange, orange);
-  text-align: center;
+  /* Give it the nice orange gradient back */
+  background: linear-gradient(180deg, #ffbd2c, #e27500); 
+  /* Strip away side padding so the text has the full 92px */
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.action-button--yellow span {
+  font-size: 9.5px !important; /* A safe size that fits natively */
+  letter-spacing: -0.2px !important; /* Slight squeeze */
+  text-align: center !important; 
+  
+  /* 🚀 THE FIX: Force the text to perfectly center itself */
+  display: block !important;
+  width: 100% !important;
+  margin: 0 auto !important; 
+  
+  /* Clear out any weird leftover shifts from previous steps */
+  transform: none !important; 
 }
 
 .observation-table-wrap {
