@@ -300,7 +300,14 @@ const App = () => {
                 <aside className="left-panel flex flex-col gap-1">
                   <ActionButtons
                     activeButtons={{ onAiGuide: aiGuidePlaying }}
-                    disabledButtons={{ onAdd: false, onAutoConnect: connectionsVerified || powerOn, onCheck: connectionsVerified, onPlot: false, onPrint: false }}
+                    // 🚀 THE FIX: Disable ADD if there is 1 or more observation
+                    disabledButtons={{ 
+                      onAdd: observations.length > 0, 
+                      onAutoConnect: connectionsVerified || powerOn, 
+                      onCheck: connectionsVerified, 
+                      onPlot: false, 
+                      onPrint: false 
+                    }}
                     onAdd={() => recordObservation('add')}
                     onCheck={handleCheck}
                     onDelete={handleDeleteObservation}
