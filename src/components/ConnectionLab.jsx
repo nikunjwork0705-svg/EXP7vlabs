@@ -114,28 +114,26 @@ const ConnectionLab = ({
     window.setTimeout(() => instanceRef.current?.repaintEverything(), 80)
   }, [autoConnect, isLocked])
 
-  // --- CHANGED: Extract actual jsPlumb wires and send to App.jsx ---
   useEffect(() => {
     if (checkRequest === 0 || !instanceRef.current) return
 
-    // Get all wires currently drawn on the screen
     const rawConnections = instanceRef.current.getConnections().map(conn => [
       conn.sourceId,
       conn.targetId
     ]);
 
-    // Send them up to App.jsx to validate
     onCheckConnectionsRef.current?.({ rawConnections })
   }, [checkRequest])
 
-  // --- CHANGED: Lock the circuit when App.jsx says it's verified ---
+  // 🚀 THE FIX 1: Lock the physical wires if verified OR autoconnected
   useEffect(() => {
-    if (isVerified && instanceRef.current && !isLocked) {
+    if ((isVerified || autoConnect) && instanceRef.current && !isLocked) {
       lockJsPlumbCircuit(instanceRef.current, containerRef.current)
       setIsLocked(true)
     }
-  }, [isVerified, isLocked])
+  }, [isVerified, autoConnect, isLocked])
 
+  // 🚀 THE FIX 2: Block manual deletion via terminal clicks
   const handleLabelClick = (event) => {
     const label = event.target.closest('.terminal-number-label')
     if (!label || !containerRef.current?.contains(label)) return
@@ -143,7 +141,8 @@ const ConnectionLab = ({
     event.preventDefault()
     event.stopPropagation()
     
-    if (isLocked) return
+    if (isLocked || autoConnect) return
+    
     const terminalId = label.dataset.terminalId
     if (!terminalId || !instanceRef.current) return
 
