@@ -214,9 +214,12 @@ const WalkthroughPopup = ({
         </button>
       </div>
 
-      <p className="walkthrough-popup__description" id={descriptionId}>
-        {activeStep.description}
-      </p>
+      {/* 🚀 THE FIX: Use dangerouslySetInnerHTML to parse the HTML tags */}
+      <p 
+        className="walkthrough-popup__description" 
+        id={descriptionId}
+        dangerouslySetInnerHTML={{ __html: activeStep.description }}
+      />
 
       <div className="walkthrough-popup__progress" aria-hidden="true">
         <span style={{ width: `${progressPercent}%` }} />
