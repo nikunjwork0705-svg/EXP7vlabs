@@ -652,7 +652,8 @@ const CalculationsBoard = ({
       showAlert({ title: 'Verification Failed', description: 'Highlighted Values are Incorrect.', type: 'error', icon: '❌', placement: 'center', duration: 4000 });
     } else {
       setIsFullyVerified(true); 
-      showAlert({ title: 'Verification Complete', description: 'All theoretical calculations are exactly correct!', type: 'success', icon: '✅', placement: 'center', duration: 3500 });
+      showAlert({ title: 'Verification Complete', description: 'Theoretical calculations verified successfully. All entered values are correct. Your simulation is now complete. You may view the report by clicking on the generate report button.',
+         type: 'success', icon: '✅', placement: 'center', duration: 3500 });
     }
   }
 

@@ -183,7 +183,7 @@ const Variac = ({ voltage = 0, setVoltage, mcbOn, isVerified, selected, variacOn
     
     showAlert({
       title: 'Autotransformer ON',
-      description: 'Now, set the voltage to 24V by turning the Autotransformer Knob.',
+      description: 'Autotransformer is now ON. Next, click on the autotransformer knob to set the desired voltage.',
       type: 'success',
       icon: '🎛️',
       placement: 'top-right'

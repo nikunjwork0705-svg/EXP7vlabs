@@ -1368,7 +1368,8 @@ const App = () => {
       hasAlerted24V.current = true;
       setCurrentStep(6);
       setTimeout(() => {
-        showAlert({ title: 'Voltage Reached', description: ' The voltage has been set to 24 V to ensure safe operation of the RLC circuit experiment. The readings are now displayed on the voltmeter, ammeter, and wattmeter. Now, click on the Add button to add the readings to the observation table.', type: 'success', icon: '⚡', placement: 'center', duration: 3000 });
+        showAlert({ title: 'Voltage Reached', description: ' The voltage has been set to 24 V to ensure safe operation of the RLC circuit experiment. The readings are now displayed on the voltmeter, ammeter, and wattmeter. Now, click on the Add button to add the readings to the observation table.',
+           type: 'success', icon: '⚡', placement: 'center', duration: 10000 });
       }, 50);
       setStatus("Variac voltage set to 24V.");
     } else if (voltage === 0) {
@@ -1408,7 +1409,8 @@ const App = () => {
     });
 
     setCurrentStep(7);
-    showAlert({ title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.', type: 'success', icon: '📊', placement: 'top-right' });
+    showAlert({ title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.',
+       type: 'success', icon: '📊', placement: 'top-right', duration: 10000  });
   }
 
   const handleDeleteObservation = () => {
@@ -1443,14 +1445,34 @@ const App = () => {
     setStatus('Power factor computed based on the latest observation.')
   }
 
+  // const handlePrint = () => {
+  //   window.print();
+  //   showAlert({ 
+  //     title: 'Printing', 
+  //     description: 'Opening the Print dialog.', 
+  //     type: 'info', 
+  //     icon: '🖨️', 
+  //     placement: 'top-right' 
+  //   });
+  // }
+
   const handlePrint = () => {
-    window.print();
+    // 🚀 THE FIX: Show the alert first, wait for confirmation, then print
     showAlert({ 
       title: 'Printing', 
-      description: 'Generating Print View...', 
+      description: 'Opening the Print dialog.', 
       type: 'info', 
       icon: '🖨️', 
-      placement: 'top-right' 
+      placement: 'center', 
+      requiresConfirmation: true, // Forces the user to acknowledge before printing
+      confirmLabel: 'OK',
+      onConfirm: () => {
+        // We use a tiny 100ms delay so the alert box has time to visually close 
+        // before the browser completely freezes to open the print dialog.
+        setTimeout(() => {
+          window.print();
+        }, 100);
+      }
     });
   }
 
@@ -1502,7 +1524,7 @@ const App = () => {
   const handleAutoConnect = () => {
     setAutoConnect(true); setConnectionsVerified(false); setCurrentStep(2);
     setStatus('Default connections added using jsPlumb. Click CHECK to validate and lock the circuit.')
-    setTimeout(() => { showAlert({ title: 'Autoconnect Complete', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', duration: 3000 }) }, 150);
+    setTimeout(() => { showAlert({ title: 'Autoconnect Completed', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', duration: 3000 }) }, 150);
   }
 
   const handleCheck = () => { setCheckRequest((current) => current + 1) }
@@ -1547,7 +1569,7 @@ const App = () => {
 
     if (wrongConnections.length === 0 && missingConnections.length === 0) {
       setConnectionsVerified(true); setCurrentStep(3); setStatus('Right connections. Now, turn ON the MCB.');
-      showAlert({ title: 'Connections Verified', description: 'All wires are placed correctly! You may now turn ON the MCB.', type: 'success', icon: '✅', placement: 'center', duration: 3000, confirmLabel: 'OK' });
+      showAlert({ title: 'Connections Verified', description: 'Connections Verified successfully. Now turn ON the MCB by clicking the MCB lever.', type: 'success', icon: '✅', placement: 'center', duration: 3000, confirmLabel: 'OK' });
     } else {
       setConnectionsVerified(false);
       let wrongText = ''; let missingText = '';
