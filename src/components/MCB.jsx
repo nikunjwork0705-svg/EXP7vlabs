@@ -132,7 +132,6 @@
 // }
 
 // export default MCB
-
 import { useLabAlerts } from '../alerts/useLabAlerts.js'
 import mcbOff from '../assets/mcb_off.png'
 import mcbOnImg from '../assets/mcb_on.png'
@@ -141,23 +140,15 @@ const MCB = ({ mcbOn, setMcbOn, selected, isVerified }) => {
   const { showAlert } = useLabAlerts()
 
   const handleToggle = () => {
+    // Silently return without showing an alert if MCB is already ON
     if (mcbOn) {
-      showAlert({
-        title: 'MCB Locked',
-        description: 'The MCB is safely locked ON. It will Turn OFF when you RESET the Page.',
-        type: 'info',
-        icon: '🔒',
-        placement: 'center',
-        requiresConfirmation: true,
-        confirmLabel: 'OK'
-      })
       return
     }
 
     if (!isVerified) {
       showAlert({
         title: 'Action Required',
-        description: 'Please verify your connections using the CHECK button first!',
+        description: 'Make and check the connections before turning ON the MCB.',
         type: 'warning',
         icon: '⚠️',
         placement: 'center',
@@ -171,7 +162,7 @@ const MCB = ({ mcbOn, setMcbOn, selected, isVerified }) => {
 
     showAlert({
       title: 'MCB Turned ON',
-      description: 'MCB has been turned ON. Now, Power ON the Autotransformer.',
+      description: 'MCB has been turned ON. Now, click the power button of the autotransformer.',
       type: 'success',
       icon: '⚡',
       placement: 'top-right'
@@ -187,15 +178,17 @@ const MCB = ({ mcbOn, setMcbOn, selected, isVerified }) => {
         src={mcbOn ? mcbOnImg : mcbOff}
         style={{ transform: 'scale(0.8, 0.87)' }}
       />
+
+      {/* 🚀 THE FIX: Change the cursor dynamically based on the MCB state */}
       <button
         aria-label={mcbOn ? 'Switch MCB off' : 'Switch MCB on'}
         aria-pressed={mcbOn}
         className="mcb__button"
         onClick={handleToggle}
         type="button"
+        style={{ cursor: mcbOn ? 'default' : 'pointer' }} 
       />
 
-      {/* FIXED ID: No spaces! */}
       <div
         id="mcb-walkthrough-target"
         style={{

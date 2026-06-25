@@ -123,7 +123,7 @@
     {
       "id": 15,
       "target": "#voltmeter-walkthrough-target",
-      "title": { "en": "Voltmeter" },
+      "title": { "en": "AC Voltmeter" },
       "description": { "en": "The voltmeter (V) is used to measure the voltage applied to the parallel RLC circuit. It shows the output voltage received from the autotransformer, which is adjusted to 24 V for the experiment." },
       "audio": "#",
       "placement": "bottom"
@@ -131,7 +131,7 @@
    {
       "id": 16,
       "target": "#ammeter-a1-walkthrough-target",
-      "title": { "en": "Ammeter 1" },
+      "title": { "en": "AC Ammeter 1" },
       "description": { "en": "The ammeter 1 is used to measure the total current drawn by the parallel RLC circuit. It displays the current flowing from the supply due to the combined effect of the resistive, inductive, and capacitive branch currents." },
       "audio": "#",
       "placement": "bottom"
@@ -139,7 +139,7 @@
     {
       "id": 17,
       "target": "#wattmeter-walkthrough-target",
-      "title": { "en": "Wattmeter" },
+      "title": { "en": "AC Wattmeter" },
       "description": { "en": "The wattmeter is used to measure the active power consumed by the parallel RLC circuit. The measured power (P) helps in analyzing the power consumed by the resistor and studying its effect on the overall circuit behaviour." },
       "audio": "#",
       "placement": "bottom"
@@ -147,7 +147,7 @@
     {
       "id": 18,
       "target": "#ammeter-a2-walkthrough-target",
-      "title": { "en": "Ammeter 2" },
+      "title": { "en": "AC Ammeter 2" },
       "description": { "en": "The ammeter 2 is used to measure the current flowing through the resistor branch of the parallel RLC circuit. The measured resistive current (I<sub>R</sub>) helps in calculating the resistance present in the circuit and is further used in determining the circuit power factor using the provided formulas." },
       "audio": "#",
       "placement": "bottom"
@@ -155,7 +155,7 @@
     {
       "id": 19,
       "target": "#ammeter-a3-walkthrough-target",
-      "title": { "en": "Ammeter 3" },
+      "title": { "en": "AC Ammeter 3" },
       "description": { "en": "The ammeter 3 is used to measure the current flowing through the inductor branch of the parallel RLC circuit. The measured inductive current (I<sub>L</sub>) will be used to calculate the inductive reactance and inductance of the circuit using the given formulas." },
       "audio": "#",
       "placement": "left"
@@ -163,7 +163,7 @@
     {
       "id": 20,
       "target": "#ammeter-a4-walkthrough-target",
-      "title": { "en": "Ammeter 4" },
+      "title": { "en": "AC Ammeter 4" },
       "description": { "en": "The ammeter 4 is used to measure the current flowing through the capacitor branch of the parallel RLC circuit. The measured capacitive current (I<sub>C</sub>) will be used to calculate the capacitive reactance and capacitance of the circuit using the given formulas." },
       "audio": "#",
       "placement": "left"
