@@ -56,7 +56,7 @@ const ObservationTable = ({ observations = [] }) => {
           <table className="observation-table w-full">
             <thead>
               <tr>
-                <th>S.No</th>
+                <th>S.No.</th>
                 <th>Voltage (V)</th>
                 <th>Current (A)</th>
                 <th>I<sub>R</sub> (A)</th>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import ObservationTable from './ObservationTable.jsx'
 import SectionCard from './SectionCard.jsx'
+// 🚀 THE FIX: Import your alert hook
+import { useLabAlerts } from '../alerts/useLabAlerts.js' 
 
 const ControlPanel = ({
   locked,
@@ -10,12 +12,14 @@ const ControlPanel = ({
 }) => {
   const [showFormulaModal, setShowFormulaModal] = useState(false);
   const [showValuesModal, setShowValuesModal] = useState(false);
+  
+  // 🚀 THE FIX: Initialize the showAlert function
+  const { showAlert } = useLabAlerts(); 
 
   const isUnlocked = wrongAttempts >= 2;
 
   return (
     <div className="flex flex-col gap-6 relative">
-      {/* THIS IS THE FIX: We wrap the SectionCard in a div with the ID */}
       <div id="control-panel">
         <SectionCard className="h-[212px]" icon="sliders" title="MATHEMATICAL EXPRESSIONS">
           <div className="flex flex-col gap-[14px] px-[26px] pt-[20px]">
@@ -36,7 +40,15 @@ const ControlPanel = ({
                   setShowValuesModal(!showValuesModal);
                   if (onShowCorrectedValues) onShowCorrectedValues();
                 } else {
-                  alert(`Corrected Values will unlock after ${2 - wrongAttempts} incorrect calculation attempt(s).`);
+                  // 🚀 THE FIX: Replace standard alert with custom showAlert
+                  showAlert({ 
+                    title: 'Locked', 
+                    description: `Corrected Values will unlock after ${2 - wrongAttempts} incorrect calculation attempt(s).`, 
+                    type: 'warning', 
+                    icon: '🔒', 
+                    placement: 'center', 
+                    duration: 4000 
+                  });
                 }
               }}
             >
@@ -152,10 +164,6 @@ const ControlPanel = ({
           </div>
         </div>
       )}
-
-      {/* <div id="observation-table-walkthrough-target">
-        <ObservationTable observations={observations} />
-      </div> */}
 
       {showValuesModal && isUnlocked && (
         <div className="formula-modal">

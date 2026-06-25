@@ -115,7 +115,7 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
     </div>
 
     <div className="equipment-item">
-      <Voltmeter label="V1" value={voltage} switchOn={powerOn && switchOn} />
+      <Voltmeter label="V" value={voltage} switchOn={powerOn && switchOn} />
       {renderTerminals(voltmeterTerminals)}
     </div>
 
@@ -125,7 +125,7 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
     </div>
 
     <div className="equipment-item">
-      <Wattmeter label="W1" value={readings.i2 || 0} switchOn={powerOn && switchOn} />
+      <Wattmeter label="W" value={readings.i2 || 0} switchOn={powerOn && switchOn} />
       {renderTerminals(wattmeterTerminals)}
     </div>
 

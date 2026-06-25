@@ -2,7 +2,7 @@ import v1Img from '../assets/V1.png'
 import needleImg from '../assets/needle.png'
 
 const meterMax = { V: 50 }
-const voltmeterImages = { V1: v1Img }
+const voltmeterImages = { V: v1Img }
 
 const Voltmeter = ({ label = 'V', value = 0, switchOn = false }) => {
   const max = meterMax[label] || 50
