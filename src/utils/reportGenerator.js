@@ -137,7 +137,7 @@ th, td {
   word-break: break-word; 
 }
 
-th { background: linear-gradient(135deg, #dfb252ea 0%, #dfb252ea 100%); border-color: #c6d7ec; border-bottom-color: #b4cae5; color: white; font-weight: 700; letter-spacing: 0; }
+th { background: linear-gradient(135deg, #2de3ffea 0%, #28ffedea 100%); border-color: #c6d7ec; border-bottom-color: #b4cae5; color: white; font-weight: 700; letter-spacing: 0; }
 thead { display: table-header-group; }
 tbody { display: table-row-group; }
 tr { break-inside: avoid-page; page-break-inside: avoid; }

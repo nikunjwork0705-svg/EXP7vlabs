@@ -137,7 +137,7 @@ const CalculationsBoard = ({
     } else {
       setIsFullyVerified(true); 
       showAlert({ title: 'Verification Complete', description: 'Theoretical calculations verified successfully. All entered values are correct. Your simulation is now complete. You may view the report by clicking on the generate report button.',
-         type: 'success', icon: '✅', placement: 'center', duration: 3500 });
+         type: 'success', icon: '✅', placement: 'center', duration: 5000 });
     }
   }
 
