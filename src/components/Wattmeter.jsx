@@ -17,7 +17,7 @@ const Wattmeter = ({ label = 'W', value = 0, switchOn = false }) => {
     <article 
       id="ac-wattmeter-w" 
       className={`wattmeter wattmeter--${label}`}
-      title={`${label} Live Value: ${value} W`}
+      title={`${label} : ${value} W`}
       style={{ position: 'relative', width: '100%', height: '100%' }}
     >
       <img src={wImg} alt={`${label} wattmeter`} className="wattmeter__image" />

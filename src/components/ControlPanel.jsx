@@ -43,7 +43,7 @@ const ControlPanel = ({
                   // 🚀 THE FIX: Replace standard alert with custom showAlert
                   showAlert({ 
                     title: 'Locked', 
-                    description: `Corrected Values will unlock after ${2 - wrongAttempts} incorrect calculation attempt(s).`, 
+                    description: `Corrected Values will unlock after ${2 - wrongAttempts} incorrect calculation attempts.`, 
                     type: 'warning', 
                     icon: '🔒', 
                     placement: 'center', 

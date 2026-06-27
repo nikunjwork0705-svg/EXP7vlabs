@@ -38,7 +38,7 @@ const Ammeter = ({ label = 'A1', value = 0, switchOn = false }) => {
         id={`ac-current-${label.toLowerCase()}`} 
         className={`ammeter ammeter--${label}`} 
         aria-label={`${label} ammeter`}
-        title={`${label} Live Value: ${value} A`}
+        title={`${label} : ${value} A`}
       >
         <img src={bgImage} alt={`${label} ammeter`} className="ammeter__image" />
         

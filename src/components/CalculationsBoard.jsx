@@ -613,7 +613,7 @@ const CalculationsBoard = ({
 
     const hasEmptyFields = Object.values(calcValues).some(val => val.trim() === '');
     if (hasEmptyFields) {
-      showAlert({ title: 'Incomplete Calculations', description: 'First calculate all the components.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
+      showAlert({ title: 'Incomplete Calculations', description: 'Please enter all the calculated values and Verify them.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
       return;
     }
 

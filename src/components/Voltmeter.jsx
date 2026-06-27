@@ -24,7 +24,7 @@ const Voltmeter = ({ label = 'V', value = 0, switchOn = false }) => {
       id="ac-voltage-v" 
       className={`voltmeter voltmeter--${label}`}
       aria-label={`${label} voltmeter`}
-      title={`${label} Live Value: ${value} V`}
+      title={`${label} : ${value} V`}
       style={{ position: 'relative', width: '100%', height: '100%' }}
     >
       <img src={voltmeterImages[label]} alt={`${label} voltmeter`} className="voltmeter__image" />
