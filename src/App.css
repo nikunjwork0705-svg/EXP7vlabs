@@ -427,7 +427,7 @@ input, button {
 }
 
 .action-button--yellow span {
-  font-size: 9.5px !important; /* A safe size that fits natively */
+  font-size: 10.5px !important; /* A safe size that fits natively */
   letter-spacing: -0.2px !important; /* Slight squeeze */
   text-align: center !important; 
   

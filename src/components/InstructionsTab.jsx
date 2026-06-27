@@ -1,5 +1,3 @@
-
-
 import React from 'react'
 
 const InstructionsTab = ({ isOpen, toggleOpen, currentStep }) => {

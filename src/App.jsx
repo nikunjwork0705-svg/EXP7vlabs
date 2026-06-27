@@ -483,13 +483,13 @@ const CONTENT_HEIGHT = BASE_HEIGHT + CALC_SECTION_GAP + CALC_SECTION_HEIGHT
 const PANEL_MAX_SCALE = 1
 const PANEL_VIEWPORT_MARGIN = 24
 
-// 🚀 THE FIX PART 1: Capture the screen's base pixel ratio on initial load
-const initialDPR = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+// Capture the screen's base pixel ratio on initial load
+const initialDPR = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
 
 const getScale = () => {
   if (typeof window === 'undefined') return 1;
   
-  // 🚀 THE FIX PART 2: Calculate how much the user has manually zoomed (Ctrl+ / Cmd+)
+  // Calculate how much the user has manually zoomed (Ctrl+ / Cmd+)
   const currentZoom = window.devicePixelRatio / initialDPR;
 
   // Multiply the viewport by the zoom level to get the "physical" window size, ignoring browser zoom
@@ -497,7 +497,9 @@ const getScale = () => {
   const effectiveHeight = window.innerHeight * currentZoom;
 
   const widthScale = (effectiveWidth - PANEL_VIEWPORT_MARGIN) / BASE_WIDTH;
-  const heightScale = (effectiveHeight - PANEL_VIEWPORT_MARGIN) / CONTENT_HEIGHT;
+  
+  // Use BASE_HEIGHT to ensure the main board fills the screen, allowing scrolling for the calc board
+  const heightScale = (effectiveHeight - PANEL_VIEWPORT_MARGIN) / BASE_HEIGHT;
   
   return Math.max(Math.min(widthScale, heightScale, PANEL_MAX_SCALE), 0.1);
 }
