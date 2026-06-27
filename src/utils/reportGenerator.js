@@ -207,7 +207,7 @@ tr:nth-child(even) { background-color: #f8fbff; }
 
     <div class="section report-overview">
       <div class="report-overview-top">
-        <p class="badge">Basic Electrical Science Lab</p>
+        <p class="badge">AI-Enhanced Basic Electrical Science Lab</p>
         <p class="report-stamp">Generated on ${escapeHtml(reportDateText)}</p>
       </div>
       <p class="report-experiment-label">Experiment Title</p>
@@ -225,7 +225,7 @@ tr:nth-child(even) { background-color: #f8fbff; }
       and capacitor were fixed, the AC supply voltage was adjusted, readings from the voltmeter, ammeters, and wattmeter 
       were recorded, and the overall power factor was calculated after collecting the required readings.</p>
 
-      <h3>Components and Key Parameters</h3>
+      <h3>Apparatus Used</h3>
       <ul class="two-column-list">
         <li>AC power supply (Range: 0-50 V)</li>
         <li>MCB (Range: 5 A)</li>

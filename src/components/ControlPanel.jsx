@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import ObservationTable from './ObservationTable.jsx'
 import SectionCard from './SectionCard.jsx'
-// 🚀 THE FIX: Import your alert hook
 import { useLabAlerts } from '../alerts/useLabAlerts.js' 
 
 const ControlPanel = ({
@@ -13,7 +12,6 @@ const ControlPanel = ({
   const [showFormulaModal, setShowFormulaModal] = useState(false);
   const [showValuesModal, setShowValuesModal] = useState(false);
   
-  // 🚀 THE FIX: Initialize the showAlert function
   const { showAlert } = useLabAlerts(); 
 
   const isUnlocked = wrongAttempts >= 2;
@@ -40,10 +38,13 @@ const ControlPanel = ({
                   setShowValuesModal(!showValuesModal);
                   if (onShowCorrectedValues) onShowCorrectedValues();
                 } else {
-                  // 🚀 THE FIX: Replace standard alert with custom showAlert
+                  // Calculate remaining attempts and determine pluralization
+                  const remainingAttempts = 2 - wrongAttempts;
+                  const attemptWord = remainingAttempts === 1 ? 'attempt' : 'attempts';
+
                   showAlert({ 
                     title: 'Locked', 
-                    description: `Corrected Values will unlock after ${2 - wrongAttempts} incorrect calculation attempts.`, 
+                    description: `Corrected Values will unlock after ${remainingAttempts} incorrect calculation ${attemptWord}.`, 
                     type: 'warning', 
                     icon: '🔒', 
                     placement: 'center', 

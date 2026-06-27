@@ -649,7 +649,7 @@ const CalculationsBoard = ({
 
     if (hasAnyError) {
       if (onWrongAttempt) onWrongAttempt();
-      showAlert({ title: 'Verification Failed', description: 'Highlighted Values are Incorrect.', type: 'error', icon: '❌', placement: 'center', duration: 4000 });
+      showAlert({ title: 'Verification Failed', description: 'Highlighted Values are incorrect.', type: 'error', icon: '❌', placement: 'center', duration: 4000 });
     } else {
       setIsFullyVerified(true); 
       showAlert({ title: 'Verification Complete', description: 'Theoretical calculations verified successfully. All entered values are correct. Your simulation is now complete. You may view the report by clicking on the generate report button.',
