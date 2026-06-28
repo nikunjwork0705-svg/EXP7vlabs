@@ -103,7 +103,7 @@ const CalculationsBoard = ({
     if (emptyFieldsCount > 0) {
       if (emptyFieldsCount === 1) {
         playAlertSound('incompltOneVal');
-        showAlert({ title: 'Incomplete Calculations', description: 'Please enter the required calculated value and verify it.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
+        showAlert({ title: 'Incomplete Calculations', description: 'Please enter the required calculated value and verify it.', type: 'warning', icon: '⚠️', placement: 'center', duration: 4500 });
       } else {
         playAlertSound('incompltMultiVal');
         showAlert({ title: 'Incomplete Calculations', description: 'Please enter all the calculated values and verify them.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
@@ -147,7 +147,7 @@ const CalculationsBoard = ({
       
       if (wrongFieldsCount === 1) {
         playAlertSound('incorrCalcOne');
-        showAlert({ title: 'Verification Failed', description: 'Verification failed. The highlighted value is incorrect. Please review your calculation and verify again.', type: 'error', icon: '❌', placement: 'center', duration: 4500 });
+        showAlert({ title: 'Verification Failed', description: 'Verification failed. The highlighted value is incorrect. Please review your calculation and verify again.', type: 'error', icon: '❌', placement: 'center', duration: 5500 });
       } else {
         playAlertSound('incorrCalcMulti');
         showAlert({ title: 'Verification Failed', description: 'Verification failed. The highlighted values are incorrect. Please recheck your calculations and verify again.', type: 'error', icon: '❌', placement: 'center', duration: 4500 });
@@ -157,7 +157,7 @@ const CalculationsBoard = ({
       // 🚀 THE SUCCESS AUDIO TRIGGER
       playAlertSound('afterCorrVerif');
       showAlert({ title: 'Verification Complete', description: 'Theoretical calculations verified successfully. All entered values are correct. Your simulation is now complete. You may view the report by clicking on the generate report button.',
-         type: 'success', icon: '✅', placement: 'center', duration: 5000 });
+         type: 'success', icon: '✅', placement: 'center', duration: 10000 });
     }
   }
 

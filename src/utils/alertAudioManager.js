@@ -48,13 +48,34 @@ const alertSounds = {
   reset: typeof Audio !== "undefined" ? new Audio(resetAudio) : null,
 };
 
+// Variable to keep track of the currently playing audio
+let currentPlayingAudio = null;
+
 // 🚀 3. PLAY FUNCTION
 export const playAlertSound = (key) => {
   const sound = alertSounds[key];
   if (sound) {
+    // If another sound is already playing, stop it first
+    if (currentPlayingAudio) {
+      currentPlayingAudio.pause();
+      currentPlayingAudio.currentTime = 0;
+    }
+    
     sound.currentTime = 0;
     sound.play().catch((e) => console.warn(`Audio playback blocked for ${key}:`, e));
+    
+    // Set the new sound as the currently playing one
+    currentPlayingAudio = sound;
   } else {
     console.log(`Audio key '${key}' not found.`);
+  }
+};
+
+// 🚀 4. STOP FUNCTION (Call this when "OK" is clicked)
+export const stopAlertSound = () => {
+  if (currentPlayingAudio) {
+    currentPlayingAudio.pause();
+    currentPlayingAudio.currentTime = 0;
+    currentPlayingAudio = null;
   }
 };

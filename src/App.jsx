@@ -1,4 +1,4 @@
-// //fixed window resize(here, in connectionlab.jsx and app.css(overflow: hidden))
+
 // import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 // import './App.css'
 // import './ConnectionEndpoints.css'
@@ -17,6 +17,9 @@
 // import ReportControls from './components/ReportControls.jsx'
 // import { generateKclReport } from './utils/reportGenerator.js'
 
+// // 🚀 IMPORT THE ALERT AUDIO MANAGER
+// import { playAlertSound, stopAlertSound } from './utils/alertAudioManager.js'
+
 // const BASE_WIDTH = 1440
 // const BASE_HEIGHT = 880
 // const CALC_SECTION_GAP = 28
@@ -25,22 +28,15 @@
 // const PANEL_MAX_SCALE = 1
 // const PANEL_VIEWPORT_MARGIN = 24
 
-// // Capture the screen's base pixel ratio on initial load
 // const initialDPR = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
 
 // const getScale = () => {
 //   if (typeof window === 'undefined') return 1;
-  
-//   // Calculate how much the user has manually zoomed (Ctrl+ / Cmd+)
 //   const currentZoom = window.devicePixelRatio / initialDPR;
-
-//   // Multiply the viewport by the zoom level to get the "physical" window size, ignoring browser zoom
 //   const effectiveWidth = window.innerWidth * currentZoom;
 //   const effectiveHeight = window.innerHeight * currentZoom;
 
 //   const widthScale = (effectiveWidth - PANEL_VIEWPORT_MARGIN) / BASE_WIDTH;
-  
-//   // Use BASE_HEIGHT to ensure the main board fills the screen, allowing scrolling for the calc board
 //   const heightScale = (effectiveHeight - PANEL_VIEWPORT_MARGIN) / BASE_HEIGHT;
   
 //   return Math.max(Math.min(widthScale, heightScale, PANEL_MAX_SCALE), 0.1);
@@ -94,15 +90,6 @@
 //   const sessionStart = useMemo(() => new Date().toISOString(), []);
 
 //   useEffect(() => {
-//     if (sessionStorage.getItem('showResetAlert')) {
-//       setTimeout(() => {
-//         showAlert({ title: 'Simulation Reset', description: 'The Simulation has been RESET. You can Start again.', type: 'info', icon: '🔄', placement: 'center', duration: 3000 });
-//       }, 100);
-//       sessionStorage.removeItem('showResetAlert');
-//     }
-//   }, [showAlert]);
-
-//   useEffect(() => {
 //     let timeoutId = null;
 //     const handleResize = () => {
 //       clearTimeout(timeoutId);
@@ -128,8 +115,16 @@
 //       hasAlerted24V.current = true;
 //       setCurrentStep(6);
 //       setTimeout(() => {
-//         showAlert({ title: 'Voltage Reached', description: ' The voltage has been set to 24 V to ensure safe operation of the RLC circuit experiment. The readings are now displayed on the voltmeter, ammeter, and wattmeter. Now, click on the Add button to add the readings to the observation table.',
-//            type: 'success', icon: '⚡', placement: 'center', duration: 10000 });
+//         playAlertSound('afterVolSet');
+//         showAlert({ 
+//           title: 'Voltage Reached', 
+//           description: 'The voltage has been set to 24 V to ensure safe operation of the RLC circuit experiment. The readings are now displayed on the voltmeter, ammeter, and wattmeter. Now, click on the Add button to add the readings to the observation table.',
+//           type: 'success', icon: '⚡', placement: 'center', 
+//           requiresConfirmation: true, confirmLabel: 'OK',
+//           duration: 12000, 
+//           onConfirm: () => stopAlertSound(),
+//           onClose: () => stopAlertSound()
+//         });
 //       }, 50);
 //       setStatus("Variac voltage set to 24V.");
 //     } else if (voltage === 0) {
@@ -153,12 +148,24 @@
 //   }, [aiGuidePlaying, startAiGuide, stopAiGuide])
 
 //   const recordObservation = (source) => {
-//     if (observations.length >= 1) return; 
+//     if (observations.length >= 1) {
+//       playAlertSound('afterReadAddClick');
+//       showAlert({ 
+//         title: 'Already Added', 
+//         description: 'The readings are already added to the table. Calculate the required circuit parameters and click the verify button to verify them.', 
+//         type: 'info', icon: 'ℹ️', placement: 'center', 
+//         requiresConfirmation: true, confirmLabel: 'OK', 
+//         duration: 5000,
+//         onConfirm: () => stopAlertSound(),
+//         onClose: () => stopAlertSound()
+//       });
+//       return; 
+//     }
 
-//     if (!connectionsVerified) { showAlert({ title: 'Action Required', description: 'Please verify your connections using the CHECK button first.', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true }); return }
-//     if (!powerOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the MCB first.', type: 'warning', icon: '⚡', placement: 'center', requiresConfirmation: true }); return }
-//     if (!switchOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the Autotransformer power button first.', type: 'warning', icon: '🔌', placement: 'center', requiresConfirmation: true }); return }
-//     if (voltage !== 24) { showAlert({ title: 'Action Required', description: 'Please rotate the Autotransformer first.', type: 'warning', icon: '🎛️', placement: 'center', requiresConfirmation: true }); return }
+//     if (!connectionsVerified) { showAlert({ title: 'Action Required', description: 'Please verify your connections using the CHECK button first.', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true, duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() }); return }
+//     if (!powerOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the MCB first.', type: 'warning', icon: '⚡', placement: 'center', requiresConfirmation: true, duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() }); return }
+//     if (!switchOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the Autotransformer power button first.', type: 'warning', icon: '🔌', placement: 'center', requiresConfirmation: true, duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() }); return }
+//     if (voltage !== 24) { showAlert({ title: 'Action Required', description: 'Please rotate the Autotransformer first.', type: 'warning', icon: '🎛️', placement: 'center', requiresConfirmation: true, duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() }); return }
 
 //     setObservations((current) => {
 //       const nextId = current.length > 0 ? current[current.length - 1].id + 1 : 1;
@@ -167,8 +174,16 @@
 //     });
 
 //     setCurrentStep(7);
-//     showAlert({ title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.',
-//        type: 'success', icon: '📊', placement: 'top-right', duration: 10000  });
+//     playAlertSound('firstReadAdded');
+//     showAlert({ 
+//       title: 'Success', 
+//       description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.',
+//       type: 'success', icon: '📊', placement: 'top-right', 
+//       requiresConfirmation: true, confirmLabel: 'OK',
+//       duration: 10000,
+//       onConfirm: () => stopAlertSound(),
+//       onClose: () => stopAlertSound()
+//     });
 //   }
 
 //   const handleDeleteObservation = () => {
@@ -180,15 +195,33 @@
 //   }
 
 //   const resetSimulation = () => {
-//     stopAiGuide()
-//     clearAlerts()
+//     stopAiGuide();
+//     clearAlerts();
 //     setCurrentStep(1);
-//     sessionStorage.setItem('showResetAlert', 'true');
-//     window.location.reload()
+    
+//     playAlertSound('reset');
+    
+//     const executeReset = () => {
+//       stopAlertSound();
+//       window.location.reload(); 
+//     };
+
+//     showAlert({ 
+//       title: 'Simulation Reset', 
+//       description: 'The Simulation has been RESET. You can start again.', 
+//       type: 'info', 
+//       icon: '🔄', 
+//       placement: 'center', 
+//       requiresConfirmation: true,
+//       confirmLabel: 'OK',
+//       duration: 5000,
+//       onConfirm: executeReset,
+//       onClose: executeReset
+//     });
 //   }
 
 //   const handleCalculate = () => {
-//     if (observations.length === 0) { showAlert({ title: 'Action Required', description: 'Please add a reading to the observation table first!', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true }); return }
+//     if (observations.length === 0) { showAlert({ title: 'Action Required', description: 'Please add a reading to the observation table first!', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true, duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() }); return }
 //     setObservations((current) => {
 //       const updated = [...current]
 //       const lastIndex = updated.length - 1
@@ -204,17 +237,21 @@
 //   }
 
 //   const handlePrint = () => {
+//     playAlertSound('print');
+    
+//     const executePrint = () => {
+//       stopAlertSound();
+//       setTimeout(() => { window.print(); }, 100);
+//     };
+
 //     showAlert({ 
 //       title: 'Printing', 
 //       description: 'Opening the Print dialog.', 
-//       type: 'info', 
-//       icon: '🖨️', 
-//       placement: 'center', 
-//       requiresConfirmation: true,
-//       confirmLabel: 'OK',
-//       onConfirm: () => {
-//         setTimeout(() => { window.print(); }, 100);
-//       }
+//       type: 'info', icon: '🖨️', placement: 'center', 
+//       requiresConfirmation: true, confirmLabel: 'OK',
+//       duration: 5000,
+//       onConfirm: executePrint,
+//       onClose: executePrint
 //     });
 //   }
 
@@ -222,48 +259,55 @@
 //     if (readingCount < MIN_READINGS) {
 //       const remainingReadings = MIN_READINGS - readingCount
 //       setStatus(`Add ${remainingReadings} more reading(s) before generating the report.`)
-//       showAlert({ title: 'More Data Needed', description: `Please add ${remainingReadings} more reading(s) to the table before generating the report.`, type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+//       showAlert({ title: 'More Data Needed', description: `Please add ${remainingReadings} more reading(s) to the table before generating the report.`, type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true, confirmLabel: 'OK', duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() });
 //       return
 //     }
 
 //     if (!isAllCalculationsVerified) {
 //       setStatus('Please verify ALL calculations before generating the report.')
-//       showAlert({ title: 'Verification Required', description: 'You must successfully verify ALL calculated values on the Calculations Board before generating the report.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+//       showAlert({ title: 'Verification Required', description: 'You must successfully verify ALL calculated values on the Calculations Board before generating the report.', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true, confirmLabel: 'OK', duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() });
 //       return
 //     }
+
+//     playAlertSound('genRepBtnClick');
+
+//     const executeGenerate = () => {
+//       stopAlertSound();
+//       const isSuccess = generateKclReport({
+//         observations: observations,
+//         resistances: { r1, r2, r3 }, 
+//         sessionStart: sessionStart,
+//         calcValues: verifiedCalcValues 
+//       });
+
+//       if (isSuccess) {
+//         setReportGenerated(true);
+//         setStatus('Experiment report generated successfully.');
+//       } else {
+//         setTimeout(() => {
+//           showAlert({ title: 'Popup Blocked', description: 'Your browser blocked the report from opening. Please allow popups for this site and try again.', type: 'error', icon: '❌', placement: 'center', requiresConfirmation: true, confirmLabel: 'OK', duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() });
+//         }, 100);
+//       }
+//     };
 
 //     showAlert({ 
 //       title: 'Report Generated', 
 //       description: 'Your report has been generated successfully. Click OK to view your report in another tab.', 
-//       type: 'success', 
-//       icon: '✅', 
-//       placement: 'center', 
-//       requiresConfirmation: true,
-//       confirmLabel: 'OK',
-//       onConfirm: () => {
-//         const isSuccess = generateKclReport({
-//           observations: observations,
-//           resistances: { r1, r2, r3 }, 
-//           sessionStart: sessionStart,
-//           calcValues: verifiedCalcValues 
-//         });
-
-//         if (isSuccess) {
-//           setReportGenerated(true);
-//           setStatus('Experiment report generated successfully.');
-//         } else {
-//           setTimeout(() => {
-//             showAlert({ title: 'Popup Blocked', description: 'Your browser blocked the report from opening. Please allow popups for this site and try again.', type: 'error', icon: '❌', placement: 'center', requiresConfirmation: true });
-//           }, 100);
-//         }
-//       }
+//       type: 'success', icon: '✅', placement: 'center', 
+//       requiresConfirmation: true, confirmLabel: 'OK',
+//       duration: 8000,
+//       onConfirm: executeGenerate,
+//       onClose: executeGenerate
 //     });
 //   }
 
 //   const handleAutoConnect = () => {
 //     setAutoConnect(true); setConnectionsVerified(false); setCurrentStep(2);
 //     setStatus('Default connections added using jsPlumb. Click CHECK to validate and lock the circuit.')
-//     setTimeout(() => { showAlert({ title: 'Autoconnect Completed', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', duration: 3000 }) }, 150);
+//     setTimeout(() => { 
+//       playAlertSound('autoConnect');
+//       showAlert({ title: 'Autoconnect Completed', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', requiresConfirmation: true, confirmLabel: 'OK', duration: 5000, onConfirm: () => stopAlertSound(), onClose: () => stopAlertSound() }) 
+//     }, 150);
 //   }
 
 //   const handleCheck = () => { setCheckRequest((current) => current + 1) }
@@ -274,15 +318,14 @@
 
 //     if (currentConns.length === 0) {
 //       setConnectionsVerified(false);
+//       playAlertSound('firstCheck');
 //       showAlert({ 
-//         title: 'Alert', 
-//         description: 'Please make the required connections as per the given instructions.', 
-//         type: 'warning', 
-//         icon: '⚠️', 
-//         placement: 'center', 
-//         requiresConfirmation: true, 
-//         confirmLabel: 'OK', 
-//         dedupeKey: 'no-connections-error' 
+//         title: 'Alert', description: 'Please make the required connections as per the given instructions.', 
+//         type: 'warning', icon: '⚠️', placement: 'center', 
+//         requiresConfirmation: true, confirmLabel: 'OK', dedupeKey: 'no-connections-error',
+//         duration: 6000,
+//         onConfirm: () => stopAlertSound(),
+//         onClose: () => stopAlertSound()
 //       });
 //       return; 
 //     }
@@ -308,9 +351,24 @@
 
 //     if (wrongConnections.length === 0 && missingConnections.length === 0) {
 //       setConnectionsVerified(true); setCurrentStep(3); setStatus('Right connections. Now, turn ON the MCB.');
-//       showAlert({ title: 'Connections Verified', description: 'Connections Verified successfully. Now turn ON the MCB by clicking the MCB lever.', type: 'success', icon: '✅', placement: 'center', duration: 3000, confirmLabel: 'OK' });
+//       playAlertSound('forCorrConnCheckClick');
+//       showAlert({ 
+//         title: 'Connections Verified', description: 'Connections Verified successfully. Now turn ON the MCB by clicking the MCB lever.', 
+//         type: 'success', icon: '✅', placement: 'center', 
+//         requiresConfirmation: true, confirmLabel: 'OK',
+//         duration: 6000,
+//         onConfirm: () => stopAlertSound(),
+//         onClose: () => stopAlertSound()
+//       });
 //     } else {
 //       setConnectionsVerified(false);
+      
+//       if (wrongConnections.length === 1) {
+//         playAlertSound('wrongConn');
+//       } else if (wrongConnections.length > 1) {
+//         playAlertSound('multiWrong');
+//       }
+
 //       let wrongText = ''; let missingText = '';
 //       if (wrongConnections.length > 0) {
 //         if (wrongConnections.length === 1) { wrongText = `Wrong Connection: ${wrongConnections[0]}.`; } 
@@ -324,7 +382,14 @@
 //         if (hiddenCount > 0) { missingText += ` and ${hiddenCount} more.`; } else { missingText += '.'; }
 //       }
 //       const finalDescription = [wrongText, missingText].filter(Boolean).join('\n\n');
-//       showAlert({ title: 'Alert', description: finalDescription, type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true, confirmLabel: 'OK', dedupeKey: 'connection-check-error' });
+//       showAlert({ 
+//         title: 'Alert', description: finalDescription, 
+//         type: 'warning', icon: '⚠️', placement: 'center', 
+//         requiresConfirmation: true, confirmLabel: 'OK', dedupeKey: 'connection-check-error',
+//         duration: 8000,
+//         onConfirm: () => stopAlertSound(),
+//         onClose: () => stopAlertSound()
+//       });
 //     }
 //   }, [showAlert]);
 
@@ -334,9 +399,7 @@
 //   return (
 //     <WalkthroughProvider>
 //       <div id="app-wrapper" className="flex justify-center w-full min-h-screen">
-        
 //         <div id="app-viewport" style={{ height: `${scaledHeight}px`, width: `${scaledWidth}px`, position: 'relative' }}>
-          
 //           <div id="app-scale" style={{ transform: `scale(${scale})`, transformOrigin: 'top left', position: 'absolute', top: 0, left: 0 }}>
 
 //             <main className="simulation-shell">
@@ -434,7 +497,6 @@
 // }
 
 // export default App
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import './ConnectionEndpoints.css'
@@ -454,7 +516,7 @@ import ReportControls from './components/ReportControls.jsx'
 import { generateKclReport } from './utils/reportGenerator.js'
 
 // 🚀 IMPORT THE ALERT AUDIO MANAGER
-import { playAlertSound } from './utils/alertAudioManager.js'
+import { playAlertSound, stopAlertSound } from './utils/alertAudioManager.js'
 
 const BASE_WIDTH = 1440
 const BASE_HEIGHT = 880
@@ -464,22 +526,15 @@ const CONTENT_HEIGHT = BASE_HEIGHT + CALC_SECTION_GAP + CALC_SECTION_HEIGHT
 const PANEL_MAX_SCALE = 1
 const PANEL_VIEWPORT_MARGIN = 24
 
-// Capture the screen's base pixel ratio on initial load
 const initialDPR = typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1;
 
 const getScale = () => {
   if (typeof window === 'undefined') return 1;
-  
-  // Calculate how much the user has manually zoomed (Ctrl+ / Cmd+)
   const currentZoom = window.devicePixelRatio / initialDPR;
-
-  // Multiply the viewport by the zoom level to get the "physical" window size, ignoring browser zoom
   const effectiveWidth = window.innerWidth * currentZoom;
   const effectiveHeight = window.innerHeight * currentZoom;
 
   const widthScale = (effectiveWidth - PANEL_VIEWPORT_MARGIN) / BASE_WIDTH;
-  
-  // Use BASE_HEIGHT to ensure the main board fills the screen, allowing scrolling for the calc board
   const heightScale = (effectiveHeight - PANEL_VIEWPORT_MARGIN) / BASE_HEIGHT;
   
   return Math.max(Math.min(widthScale, heightScale, PANEL_MAX_SCALE), 0.1);
@@ -532,26 +587,6 @@ const App = () => {
   const readingCount = observations.length;
   const sessionStart = useMemo(() => new Date().toISOString(), []);
 
-useEffect(() => {
-    if (sessionStorage.getItem('showResetAlert')) {
-      setTimeout(() => {
-        // 🚀 TRIGGER AUDIO AFTER PAGE RELOAD
-        playAlertSound('reset');
-        
-        showAlert({ 
-          title: 'Simulation Reset', 
-          description: 'The Simulation has been RESET. You can Start again.', 
-          type: 'info', 
-          icon: '🔄', 
-          placement: 'center', 
-          duration: 3000 
-        });
-      }, 500); // 💡 Adding a slight 500ms delay helps the browser load before playing audio
-      
-      sessionStorage.removeItem('showResetAlert');
-    }
-  }, [showAlert]);
-
   useEffect(() => {
     let timeoutId = null;
     const handleResize = () => {
@@ -578,10 +613,14 @@ useEffect(() => {
       hasAlerted24V.current = true;
       setCurrentStep(6);
       setTimeout(() => {
-        // 🚀 TRIGGER 24V REACHED AUDIO
         playAlertSound('afterVolSet');
-        showAlert({ title: 'Voltage Reached', description: ' The voltage has been set to 24 V to ensure safe operation of the RLC circuit experiment. The readings are now displayed on the voltmeter, ammeter, and wattmeter. Now, click on the Add button to add the readings to the observation table.',
-           type: 'success', icon: '⚡', placement: 'center', duration: 13000 });
+        showAlert({ 
+          title: 'Voltage Reached', 
+          description: 'The voltage has been set to 24 V to ensure safe operation of the RLC circuit experiment. The readings are now displayed on the voltmeter, ammeter, and wattmeter. Now, click on the Add button to add the readings to the observation table.',
+          type: 'success', icon: '⚡', placement: 'center', 
+          duration: 15000, 
+          onClose: () => stopAlertSound()
+        });
       }, 50);
       setStatus("Variac voltage set to 24V.");
     } else if (voltage === 0) {
@@ -606,16 +645,21 @@ useEffect(() => {
 
   const recordObservation = (source) => {
     if (observations.length >= 1) {
-      // 🚀 TRIGGER ADD CLICKED AGAIN AUDIO
       playAlertSound('afterReadAddClick');
-      showAlert({ title: 'Already Added', description: 'The readings are already added to the table. Calculate the required circuit parameters and click the verify button to verify them.', type: 'info', icon: 'ℹ️', placement: 'center', duration: 4000 });
+      showAlert({ 
+        title: 'Already Added', 
+        description: 'The readings are already added to the table. Calculate the required circuit parameters and click the verify button to verify them.', 
+        type: 'info', icon: 'ℹ️', placement: 'center', 
+        duration: 8200,
+        onClose: () => stopAlertSound()
+      });
       return; 
     }
 
-    if (!connectionsVerified) { showAlert({ title: 'Action Required', description: 'Please verify your connections using the CHECK button first.', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true }); return }
-    if (!powerOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the MCB first.', type: 'warning', icon: '⚡', placement: 'center', requiresConfirmation: true }); return }
-    if (!switchOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the Autotransformer power button first.', type: 'warning', icon: '🔌', placement: 'center', requiresConfirmation: true }); return }
-    if (voltage !== 24) { showAlert({ title: 'Action Required', description: 'Please rotate the Autotransformer first.', type: 'warning', icon: '🎛️', placement: 'center', requiresConfirmation: true }); return }
+    if (!connectionsVerified) { showAlert({ title: 'Action Required', description: 'Please verify your connections using the CHECK button first.', type: 'warning', icon: '⚠️', placement: 'center', duration: 5000, onClose: () => stopAlertSound() }); return }
+    if (!powerOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the MCB first.', type: 'warning', icon: '⚡', placement: 'center', duration: 5000, onClose: () => stopAlertSound() }); return }
+    if (!switchOn) { showAlert({ title: 'Action Required', description: 'Please turn ON the Autotransformer power button first.', type: 'warning', icon: '🔌', placement: 'center', duration: 5000, onClose: () => stopAlertSound() }); return }
+    if (voltage !== 24) { showAlert({ title: 'Action Required', description: 'Please rotate the Autotransformer first.', type: 'warning', icon: '🎛️', placement: 'center', duration: 5000, onClose: () => stopAlertSound() }); return }
 
     setObservations((current) => {
       const nextId = current.length > 0 ? current[current.length - 1].id + 1 : 1;
@@ -624,10 +668,14 @@ useEffect(() => {
     });
 
     setCurrentStep(7);
-    // 🚀 TRIGGER FIRST READING ADDED AUDIO
     playAlertSound('firstReadAdded');
-    showAlert({ title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.',
-       type: 'success', icon: '📊', placement: 'top-right', duration: 10000  });
+    showAlert({ 
+      title: 'Success', 
+      description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.',
+      type: 'success', icon: '📊', placement: 'top-right', 
+      duration: 15000,
+      onClose: () => stopAlertSound()
+    });
   }
 
   const handleDeleteObservation = () => {
@@ -638,19 +686,31 @@ useEffect(() => {
     })
   }
 
-const resetSimulation = () => {
+  const resetSimulation = () => {
     stopAiGuide();
     clearAlerts();
     setCurrentStep(1);
     
-    // Set the flag for the next page load
-    sessionStorage.setItem('showResetAlert', 'true');
+    playAlertSound('reset');
     
-    // Immediately reload the page
-    window.location.reload();
+    const executeReset = () => {
+      stopAlertSound();
+      window.location.reload(); 
+    };
+
+    showAlert({ 
+      title: 'Simulation Reset', 
+      description: 'The Simulation has been RESET. You can start again.', 
+      type: 'info', 
+      icon: '🔄', 
+      placement: 'center', 
+      duration: 5000,
+      onClose: executeReset
+    });
   }
+
   const handleCalculate = () => {
-    if (observations.length === 0) { showAlert({ title: 'Action Required', description: 'Please add a reading to the observation table first!', type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true }); return }
+    if (observations.length === 0) { showAlert({ title: 'Action Required', description: 'Please add a reading to the observation table first!', type: 'warning', icon: '⚠️', placement: 'center', duration: 5000, onClose: () => stopAlertSound() }); return }
     setObservations((current) => {
       const updated = [...current]
       const lastIndex = updated.length - 1
@@ -666,19 +726,19 @@ const resetSimulation = () => {
   }
 
   const handlePrint = () => {
-    // 🚀 TRIGGER PRINT AUDIO
     playAlertSound('print');
+    
+    const executePrint = () => {
+      stopAlertSound();
+      setTimeout(() => { window.print(); }, 100);
+    };
+
     showAlert({ 
       title: 'Printing', 
       description: 'Opening the Print dialog.', 
-      type: 'info', 
-      icon: '🖨️', 
-      placement: 'center', 
-      requiresConfirmation: true,
-      confirmLabel: 'OK',
-      onConfirm: () => {
-        setTimeout(() => { window.print(); }, 100);
-      }
+      type: 'info', icon: '🖨️', placement: 'center', 
+      duration: 5000,
+      onClose: executePrint
     });
   }
 
@@ -686,43 +746,43 @@ const resetSimulation = () => {
     if (readingCount < MIN_READINGS) {
       const remainingReadings = MIN_READINGS - readingCount
       setStatus(`Add ${remainingReadings} more reading(s) before generating the report.`)
-      showAlert({ title: 'More Data Needed', description: `Please add ${remainingReadings} more reading(s) to the table before generating the report.`, type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+      showAlert({ title: 'More Data Needed', description: `Please add ${remainingReadings} more reading(s) to the table before generating the report.`, type: 'warning', icon: '⚠️', placement: 'center', duration: 5000, onClose: () => stopAlertSound() });
       return
     }
 
     if (!isAllCalculationsVerified) {
       setStatus('Please verify ALL calculations before generating the report.')
-      showAlert({ title: 'Verification Required', description: 'You must successfully verify ALL calculated values on the Calculations Board before generating the report.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+      showAlert({ title: 'Verification Required', description: 'You must successfully verify ALL calculated values on the Calculations Board before generating the report.', type: 'warning', icon: '⚠️', placement: 'center', duration: 5000, onClose: () => stopAlertSound() });
       return
     }
 
-    // 🚀 TRIGGER REPORT GENERATED AUDIO
     playAlertSound('genRepBtnClick');
+
+    const executeGenerate = () => {
+      stopAlertSound();
+      const isSuccess = generateKclReport({
+        observations: observations,
+        resistances: { r1, r2, r3 }, 
+        sessionStart: sessionStart,
+        calcValues: verifiedCalcValues 
+      });
+
+      if (isSuccess) {
+        setReportGenerated(true);
+        setStatus('Experiment report generated successfully.');
+      } else {
+        setTimeout(() => {
+          showAlert({ title: 'Popup Blocked', description: 'Your browser blocked the report from opening. Please allow popups for this site and try again.', type: 'error', icon: '❌', placement: 'center', duration: 5000, onClose: () => stopAlertSound() });
+        }, 100);
+      }
+    };
+
     showAlert({ 
       title: 'Report Generated', 
-      description: 'Your report has been generated successfully. Click OK to view your report in another tab.', 
-      type: 'success', 
-      icon: '✅', 
-      placement: 'center', 
-      requiresConfirmation: true,
-      confirmLabel: 'OK',
-      onConfirm: () => {
-        const isSuccess = generateKclReport({
-          observations: observations,
-          resistances: { r1, r2, r3 }, 
-          sessionStart: sessionStart,
-          calcValues: verifiedCalcValues 
-        });
-
-        if (isSuccess) {
-          setReportGenerated(true);
-          setStatus('Experiment report generated successfully.');
-        } else {
-          setTimeout(() => {
-            showAlert({ title: 'Popup Blocked', description: 'Your browser blocked the report from opening. Please allow popups for this site and try again.', type: 'error', icon: '❌', placement: 'center', requiresConfirmation: true });
-          }, 100);
-        }
-      }
+      description: 'Your report has been generated successfully. Click OK to view your report.', 
+      type: 'success', icon: '✅', placement: 'center', 
+      duration: 5600,
+      onClose: executeGenerate
     });
   }
 
@@ -730,9 +790,8 @@ const resetSimulation = () => {
     setAutoConnect(true); setConnectionsVerified(false); setCurrentStep(2);
     setStatus('Default connections added using jsPlumb. Click CHECK to validate and lock the circuit.')
     setTimeout(() => { 
-      // 🚀 TRIGGER AUTOCONNECT AUDIO
       playAlertSound('autoConnect');
-      showAlert({ title: 'Autoconnect Completed', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', duration: 5000 }) 
+      showAlert({ title: 'Autoconnect Completed', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', duration: 5000, onClose: () => stopAlertSound() }) 
     }, 150);
   }
 
@@ -744,17 +803,13 @@ const resetSimulation = () => {
 
     if (currentConns.length === 0) {
       setConnectionsVerified(false);
-      // 🚀 TRIGGER FIRST CHECK AUDIO
       playAlertSound('firstCheck');
       showAlert({ 
-        title: 'Alert', 
-        description: 'Please make the required connections as per the given instructions.', 
-        type: 'warning', 
-        icon: '⚠️', 
-        placement: 'center', 
-        requiresConfirmation: true, 
-        confirmLabel: 'OK', 
-        dedupeKey: 'no-connections-error' 
+        title: 'Alert', description: 'Please make the required connections as per the given instructions.', 
+        type: 'warning', icon: '⚠️', placement: 'center', 
+        dedupeKey: 'no-connections-error',
+        duration: 6000,
+        onClose: () => stopAlertSound()
       });
       return; 
     }
@@ -780,13 +835,16 @@ const resetSimulation = () => {
 
     if (wrongConnections.length === 0 && missingConnections.length === 0) {
       setConnectionsVerified(true); setCurrentStep(3); setStatus('Right connections. Now, turn ON the MCB.');
-      // 🚀 TRIGGER CONNECTIONS VERIFIED AUDIO
       playAlertSound('forCorrConnCheckClick');
-      showAlert({ title: 'Connections Verified', description: 'Connections Verified successfully. Now turn ON the MCB by clicking the MCB lever.', type: 'success', icon: '✅', placement: 'center', duration: 6500, confirmLabel: 'OK' });
+      showAlert({ 
+        title: 'Connections Verified', description: 'Connections Verified successfully. Now turn ON the MCB by clicking the MCB lever.', 
+        type: 'success', icon: '✅', placement: 'center', 
+        duration: 7000,
+        onClose: () => stopAlertSound()
+      });
     } else {
       setConnectionsVerified(false);
       
-      // 🚀 TRIGGER WRONG CONNECTIONS AUDIO
       if (wrongConnections.length === 1) {
         playAlertSound('wrongConn');
       } else if (wrongConnections.length > 1) {
@@ -806,7 +864,13 @@ const resetSimulation = () => {
         if (hiddenCount > 0) { missingText += ` and ${hiddenCount} more.`; } else { missingText += '.'; }
       }
       const finalDescription = [wrongText, missingText].filter(Boolean).join('\n\n');
-      showAlert({ title: 'Alert', description: finalDescription, type: 'warning', icon: '⚠️', placement: 'center', requiresConfirmation: true, confirmLabel: 'OK', dedupeKey: 'connection-check-error' });
+      showAlert({ 
+        title: 'Alert', description: finalDescription, 
+        type: 'warning', icon: '⚠️', placement: 'center', 
+        dedupeKey: 'connection-check-error',
+        duration: 8000,
+        onClose: () => stopAlertSound()
+      });
     }
   }, [showAlert]);
 
@@ -816,9 +880,7 @@ const resetSimulation = () => {
   return (
     <WalkthroughProvider>
       <div id="app-wrapper" className="flex justify-center w-full min-h-screen">
-        
         <div id="app-viewport" style={{ height: `${scaledHeight}px`, width: `${scaledWidth}px`, position: 'relative' }}>
-          
           <div id="app-scale" style={{ transform: `scale(${scale})`, transformOrigin: 'top left', position: 'absolute', top: 0, left: 0 }}>
 
             <main className="simulation-shell">
