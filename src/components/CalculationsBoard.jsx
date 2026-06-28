@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useLabAlerts } from '../alerts/useLabAlerts.js'
+// 🚀 IMPORT THE ALERT AUDIO MANAGER
+import { playAlertSound } from '../utils/alertAudioManager.js'
 
 // Define the acceptable min and max ranges for each input field
 const FIELD_RANGES = {
@@ -37,7 +39,7 @@ const CalculationsBoard = ({
   const [hasVerified, setHasVerified] = useState(false)
   const [isFullyVerified, setIsFullyVerified] = useState(false)
 
-  // 🚀 THE FIX: Determine if inputs should be disabled based on observation table length
+  // Determine if inputs should be disabled based on observation table length
   const isInputDisabled = isFullyVerified || observations.length === 0;
   const disabledTitle = observations.length === 0 ? "Add a reading to the observation table first" : "";
 
@@ -95,9 +97,17 @@ const CalculationsBoard = ({
       return;
     }
 
-    const hasEmptyFields = Object.values(calcValues).some(val => val.trim() === '');
-    if (hasEmptyFields) {
-      showAlert({ title: 'Incomplete Calculations', description: 'Please enter all the calculated values and Verify them.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
+    // 🚀 NEW LOGIC: Calculate empty fields and trigger exact audio
+    const emptyFieldsCount = Object.values(calcValues).filter(val => val.trim() === '').length;
+    
+    if (emptyFieldsCount > 0) {
+      if (emptyFieldsCount === 1) {
+        playAlertSound('incompltOneVal');
+        showAlert({ title: 'Incomplete Calculations', description: 'Please enter the required calculated value and verify it.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
+      } else {
+        playAlertSound('incompltMultiVal');
+        showAlert({ title: 'Incomplete Calculations', description: 'Please enter all the calculated values and verify them.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
+      }
       return;
     }
 
@@ -124,18 +134,28 @@ const CalculationsBoard = ({
     setFieldErrors(newErrors)
     setHasVerified(true)
 
-    const hasAnyError = Object.values(newErrors).some(err => err === true);
+    // 🚀 NEW LOGIC: Calculate wrong fields and trigger exact audio
+    const wrongFieldsCount = Object.values(newErrors).filter(err => err === true).length;
     const isResistorCorrect = !newErrors.r && calcValues.r !== '';
 
     if (onRVerified) {
-      onRVerified(isResistorCorrect, !hasAnyError, calcValues);
+      onRVerified(isResistorCorrect, wrongFieldsCount === 0, calcValues);
     }
 
-    if (hasAnyError) {
+    if (wrongFieldsCount > 0) {
       if (onWrongAttempt) onWrongAttempt();
-      showAlert({ title: 'Verification Failed', description: 'Highlighted Values are incorrect.', type: 'error', icon: '❌', placement: 'center', duration: 4000 });
+      
+      if (wrongFieldsCount === 1) {
+        playAlertSound('incorrCalcOne');
+        showAlert({ title: 'Verification Failed', description: 'Verification failed. The highlighted value is incorrect. Please review your calculation and verify again.', type: 'error', icon: '❌', placement: 'center', duration: 4500 });
+      } else {
+        playAlertSound('incorrCalcMulti');
+        showAlert({ title: 'Verification Failed', description: 'Verification failed. The highlighted values are incorrect. Please recheck your calculations and verify again.', type: 'error', icon: '❌', placement: 'center', duration: 4500 });
+      }
     } else {
       setIsFullyVerified(true); 
+      // 🚀 THE SUCCESS AUDIO TRIGGER
+      playAlertSound('afterCorrVerif');
       showAlert({ title: 'Verification Complete', description: 'Theoretical calculations verified successfully. All entered values are correct. Your simulation is now complete. You may view the report by clicking on the generate report button.',
          type: 'success', icon: '✅', placement: 'center', duration: 5000 });
     }
