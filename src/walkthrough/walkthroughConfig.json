@@ -13,7 +13,7 @@
       "target": "#experiment-title-board",
       "title": { "en": "Aim" },
       "description": { "en": "The aim of the experiment is to study and measure the Voltage, Current, Power and Power Factor in a parallel RLC circuit." },
-      "audio": "Aim.wav",
+      "audio": "/audio/Aim.wav",
       "placement": "bottom"
     },
     {
@@ -21,7 +21,7 @@
       "target": "#instruction-button",
       "title": { "en": "Instructions Button" },
       "description": { "en": "The Instructions provide step-by-step guidance on how to perform the simulation." },
-      "audio": "Instructions Button.wav",
+      "audio": "/audio/Instructions Button.wav",
       "placement": "right"
     },
     {
@@ -29,7 +29,7 @@
       "target": "#ai-guide-button",
       "title": { "en": "AI Guide Button" },
       "description": { "en": "To use this feature, click on the <b>AI Guide</b> button. The AI guide will assist you in performing the simulation accurately at each step." },
-      "audio": "AI Guide Button.wav",
+      "audio": "/audio/AI Guide Button.wav",
       "placement": "right"
     },
     {
@@ -37,7 +37,7 @@
       "target": "#check-button",
       "title": { "en": "Check Button" },
       "description": { "en": "The <b>CHECK</b> button verifies all the connections to ensure that they are correct." },
-      "audio": "Check Button.wav",
+      "audio": "/audio/Check Button.wav",
       "placement": "right"
     },
     {
@@ -45,7 +45,7 @@
       "target": "#auto-connect-button",
       "title": { "en": "Auto Connect Button" },
       "description": { "en": "The <b>AUTO CONNECT</b> button makes all the connections automatically." },
-      "audio": "Auto Connect Button.wav",
+      "audio": "/audio/Auto Connect Button.wav",
       "placement": "right"
     },
     {
@@ -53,7 +53,7 @@
       "target": "#add-button",
       "title": { "en": "Add Button" },
       "description": { "en": "The <b>ADD</b> button adds the readings to the observation table." },
-      "audio": "Add Button.wav",
+      "audio": "/audio/Add Button.wav",
       "placement": "right"
     },
     {
@@ -61,7 +61,7 @@
       "target": "#reset-button",
       "title": { "en": "Reset Button" },
       "description": { "en": "The <b>RESET</b> button refresh the simulation to its initial state for a fresh start." },
-      "audio": "Reset Button-.wav",
+      "audio": "/audio/Reset Button-.wav",
       "placement": "right"
     },
     {
@@ -69,7 +69,7 @@
       "target": "#print-button",
       "title": { "en": "Print Button" },
       "description": { "en": "The <b>PRINT</b> button allows you to print the simulation." },
-      "audio": "Print Button.wav",
+      "audio": "/audio/Print Button.wav",
       "placement": "right"
     },
     {
@@ -77,7 +77,7 @@
       "target": "#control-panel",
       "title": { "en": "Mathematical Expressions" },
       "description": { "en": "This panel contains the formulas required to calculate the parameters of the parallel RLC circuit using the recorded readings. Use these expressions to determine the required values and compare your calculated results with the evaluated values for verification." },
-      "audio": "Mathematical Expressions.wav",
+      "audio": "/audio/Mathematical Expressions.wav",
       "placement": "right"
     },
     {
@@ -85,7 +85,7 @@
       "target": "#mcb-walkthrough-target",
       "title": { "en": "MCB" },
       "description": { "en": "The MCB acts as the main power switch for the experiment. It also protects the circuit by automatically disconnecting the power supply in case of an overload or short circuit. When turned ON, it supplies electrical power to the circuit." },
-      "audio": "MCB.wav",
+      "audio": "/audio/MCB.wav",
       "placement": "bottom"
     },
     {
@@ -93,7 +93,7 @@
       "target": "#variac-walkthrough-target",
       "title": { "en": "Autotransformer" },
       "description": { "en": "The autotransformer is used to obtain a variable AC output voltage from the 230 V input supply. It allows the output voltage to be varied gradually and set to 24 V for safe operation of the circuit." },
-      "audio": "Autotransformer.wav",
+      "audio": "/audio/Autotransformer.wav",
       "placement": "top"
     },
     {
@@ -101,7 +101,7 @@
       "target": "#resistor-walkthrough-target",
       "title": { "en": "Resistor" },
       "description": { "en": "The resistor acts as the resistive element of the parallel RLC circuit and consumes active power. It is used to study the effect of resistance on circuit current, power, and power factor." },
-      "audio": "Resistor.wav",
+      "audio": "/audio/Resistor.wav",
       "placement": "bottom"
     },
      {
@@ -109,7 +109,7 @@
       "target": "#inductor-walkthrough-target",
       "title": { "en": "Inductor" },
       "description": { "en": "The inductor provides the inductive branch in the parallel RLC circuit and stores energy in its magnetic field. It introduces inductive reactance, affects the circuit current and phase relationship, and contributes to the overall power factor of the circuit." },
-      "audio": "Inductor.wav",
+      "audio": "/audio/Inductor.wav",
       "placement": "bottom"
     },
     {
@@ -117,7 +117,7 @@
       "target": "#capacitor-walkthrough-target",
       "title": { "en": "Capacitor" },
       "description": { "en": "The capacitor acts as the capacitive element of the parallel RLC circuit and stores energy in its electric field. It is used to study the effect of capacitance on circuit current, phase angle, and power factor." },
-      "audio": "Capacitor.wav",
+      "audio": "/audio/Capacitor.wav",
       "placement": "bottom"
     },
     {
@@ -125,7 +125,7 @@
       "target": "#voltmeter-walkthrough-target",
       "title": { "en": "AC Voltmeter" },
       "description": { "en": "The voltmeter (V) is used to measure the voltage applied to the parallel RLC circuit. It shows the output voltage received from the autotransformer, which is adjusted to 24 V for the experiment." },
-      "audio": "AC Voltmeter.wav",
+      "audio": "/audio/AC Voltmeter.wav",
       "placement": "bottom"
     },
    {
@@ -133,7 +133,7 @@
       "target": "#ammeter-a1-walkthrough-target",
       "title": { "en": "AC Ammeter 1" },
       "description": { "en": "The ammeter 1 is used to measure the total current drawn by the parallel RLC circuit. It displays the current flowing from the supply due to the combined effect of the resistive, inductive, and capacitive branch currents." },
-      "audio": "AC Ammeter 1.wav",
+      "audio": "/audio/AC Ammeter 1.wav",
       "placement": "bottom"
     },
     {
@@ -141,7 +141,7 @@
       "target": "#wattmeter-walkthrough-target",
       "title": { "en": "AC Wattmeter" },
       "description": { "en": "The wattmeter is used to measure the active power consumed by the parallel RLC circuit. The measured power (P) helps in analyzing the power consumed by the resistor and studying its effect on the overall circuit behaviour." },
-      "audio": "AC Wattmeter.wav",
+      "audio": "/audio/AC Wattmeter.wav",
       "placement": "bottom"
     },
     {
@@ -149,7 +149,7 @@
       "target": "#ammeter-a2-walkthrough-target",
       "title": { "en": "AC Ammeter 2" },
       "description": { "en": "The ammeter 2 is used to measure the current flowing through the resistor branch of the parallel RLC circuit. The measured resistive current (I<sub>R</sub>) helps in calculating the resistance present in the circuit and is further used in determining the circuit power factor using the provided formulas." },
-      "audio": "AC Ammeter 2.wav",
+      "audio": "/audio/AC Ammeter 2.wav",
       "placement": "bottom"
     },
     {
@@ -157,7 +157,7 @@
       "target": "#ammeter-a3-walkthrough-target",
       "title": { "en": "AC Ammeter 3" },
       "description": { "en": "The ammeter 3 is used to measure the current flowing through the inductor branch of the parallel RLC circuit. The measured inductive current (I<sub>L</sub>) will be used to calculate the inductive reactance and inductance of the circuit using the given formulas." },
-      "audio": "AC Ammeter 3.wav",
+      "audio": "/audio/AC Ammeter 3.wav",
       "placement": "left"
     },
     {
@@ -165,7 +165,7 @@
       "target": "#ammeter-a4-walkthrough-target",
       "title": { "en": "AC Ammeter 4" },
       "description": { "en": "The ammeter 4 is used to measure the current flowing through the capacitor branch of the parallel RLC circuit. The measured capacitive current (I<sub>C</sub>) will be used to calculate the capacitive reactance and capacitance of the circuit using the given formulas." },
-      "audio": "AC Ammeter 4.wav",
+      "audio": "/audio/AC Ammeter 4.wav",
       "placement": "left"
     },
     {
@@ -173,7 +173,7 @@
       "target": "#observation-table-panel",
       "title": { "en": "Observation Table" },
       "description": { "en": "This table records the measured readings of voltage, supply current, resistive current (I<sub>R</sub>), inductive current (I<sub>L</sub>), capacitive current (I<sub>C</sub>) and power during the experiment. These observations will be used to calculate and analyze the parameters of the parallel RLC circuit." },
-      "audio": "Observation Table.wav",
+      "audio": "/audio/Observation Table.wav",
       "placement": "left"
     },
     {
@@ -181,7 +181,7 @@
       "target": "#calculations-board",
       "title": { "en": "Theoretical Calculations" },
       "description": { "en": "This section allows you to calculate the required circuit parameters using the recorded readings and the provided formulas. Verify your calculated values by comparing them with the evaluated values provided in the Mathematical Expressions section." },
-      "audio": "Theoretical Calculations.wav",
+      "audio": "/audio/Theoretical Calculations.wav",
       "placement": "top"
     },
     {
@@ -189,8 +189,8 @@
       "target": "#generate-report-button",
       "title": { "en": "Generate Report" },
       "description": { "en": "The Report button generates a summarised report of the simulation. After completing the observation table and theoretical calculations, generate the report. The report will include the time taken to complete the simulation, the apparatus used, recorded readings, user-calculated results and conclusion." },
-      "audio": "Generate Report.wav",
-      "placement": "top"
+      "audio": "/audio/Report Generated.wav",
+      "placement": "right"
     }
   ]
 }

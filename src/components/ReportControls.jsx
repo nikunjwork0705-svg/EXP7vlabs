@@ -13,16 +13,6 @@ const ReportControls = ({
   // The button is ONLY enabled if BOTH conditions are true
   const isButtonEnabled = readingsReady && isCalculationsVerified
 
-  // let buttonTitle = ''
-  // if (reportGenerated) {
-  //   buttonTitle = 'Report generated. Click to regenerate the report.'
-  // } else if (!readingsReady) {
-  //   buttonTitle = `Generate report after adding ${minReadings} reading to the Observation table.`
-  // } else if (!isCalculationsVerified) {
-  //   buttonTitle = 'Verify your values on the Calculations Board to unlock the report.'
-  // } else {
-  //   buttonTitle = 'Generate Report.'
-  // }
 
   return (
     <button

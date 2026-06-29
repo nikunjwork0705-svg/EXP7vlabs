@@ -68,39 +68,60 @@ const variacTerminals = [
   { id: '26-endpoint', label: '26', polarity: 'minus', left: 283, top: 156, lLeft: 301, lTop: 198 },
 ]
 
-const renderTerminals = (terminals) => (
-  terminals.map(({ id, label, polarity, left, top, lLeft, lTop }) => (
-    <Fragment key={id}>
-      <span
-        id={id}
-        className="connection-terminal"
-        data-polarity={polarity}
-        aria-label={`Terminal ${label}`}
-        style={{
-          position: 'absolute',
-          left: `${left}px`,
-          top: `${top}px`,
-          zIndex: 50,
-          cursor: 'crosshair'
-        }}
-      />
-      <span
-        className="terminal-number-label"
-        data-terminal-id={id}
-        style={{
-          position: 'absolute',
-          left: `${lLeft}px`,
-          top: `${lTop}px`,
-          zIndex: 50
-        }}
-      >
-        {label}
-      </span>
-    </Fragment>
-  ))
+// 🚀 ACCEPT highlightedTerminals AS A SECOND ARGUMENT
+const renderTerminals = (terminals, highlightedTerminals = []) => (
+  terminals.map(({ id, label, polarity, left, top, lLeft, lTop }) => {
+    // Check if this specific terminal ID is in the highlighted array
+    const isHighlighted = highlightedTerminals.includes(id);
+
+    return (
+      <Fragment key={id}>
+        <span
+          id={id}
+          // 🚀 APPLY THE GLOWING CSS CLASS DYNAMICALLY
+          className={`connection-terminal ${isHighlighted ? 'highlighted-terminal' : ''}`}
+          data-polarity={polarity}
+          aria-label={`Terminal ${label}`}
+          style={{
+            position: 'absolute',
+            left: `${left}px`,
+            top: `${top}px`,
+            zIndex: 50,
+            cursor: 'crosshair'
+          }}
+        />
+        <span
+          className={`terminal-number-label ${isHighlighted ? 'highlighted-label' : ''}`}
+          data-terminal-id={id}
+          style={{
+            position: 'absolute',
+            left: `${lLeft}px`,
+            top: `${lTop}px`,
+            zIndex: 50,
+            fontWeight: isHighlighted ? 'bold' : 'normal', // Optional: make text bold when glowing
+            color: isHighlighted ? '#00c8ff' : 'inherit' // Optional: color text when glowing
+          }}
+        >
+          {label}
+        </span>
+      </Fragment>
+    );
+  })
 )
 
-const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, switchOn, setSwitchOn, setVoltage, voltage, isRVerified }) => (
+const EquipmentPanel = ({ 
+  highlightedTerminals = [], // 🚀 ACCEPT THE PROP FROM ConnectionLab
+  powerOn, 
+  readings, 
+  setPowerOn, 
+  selected, 
+  isVerified, 
+  switchOn, 
+  setSwitchOn, 
+  setVoltage, 
+  voltage, 
+  isRVerified 
+}) => (
 
   <section className="equipment-panel">
 
@@ -111,37 +132,37 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
         selected={selected}
         isVerified={isVerified}
       />
-      {renderTerminals(mcbTerminals)}
+      {renderTerminals(mcbTerminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Voltmeter label="V" value={voltage} switchOn={powerOn && switchOn} />
-      {renderTerminals(voltmeterTerminals)}
+      {renderTerminals(voltmeterTerminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Ammeter label="A1" value={readings.i1 || 0} switchOn={powerOn && switchOn} />
-      {renderTerminals(ammeterTerminals)}
+      {renderTerminals(ammeterTerminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Wattmeter label="W" value={readings.i2 || 0} switchOn={powerOn && switchOn} />
-      {renderTerminals(wattmeterTerminals)}
+      {renderTerminals(wattmeterTerminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Ammeter label="A2" value={readings.iR || 0} switchOn={powerOn && switchOn} />
-      {renderTerminals(ammeter2Terminals)}
+      {renderTerminals(ammeter2Terminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Ammeter label="A3" value={readings.iL || 0} switchOn={powerOn && switchOn} />
-      {renderTerminals(ammeter3Terminals)}
+      {renderTerminals(ammeter3Terminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Ammeter label="A4" value={readings.iC || 0} switchOn={powerOn && switchOn} />
-      {renderTerminals(ammeter4Terminals)}
+      {renderTerminals(ammeter4Terminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
@@ -150,19 +171,19 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
         mcbOn={powerOn}
         variacOn={switchOn}
         voltage={voltage}
-        isRVerified={isRVerified} // 👈 THIS IS THE PROP THE RESISTOR COMPONENT USES
+        isRVerified={isRVerified} 
       />
-      {renderTerminals(resistorTerminals)}
+      {renderTerminals(resistorTerminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Capacitor />
-      {renderTerminals(capacitorTerminals)}
+      {renderTerminals(capacitorTerminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
       <Inductor />
-      {renderTerminals(inductorTerminals)}
+      {renderTerminals(inductorTerminals, highlightedTerminals)}
     </div>
 
     <div className="equipment-item">
@@ -175,7 +196,7 @@ const EquipmentPanel = ({ powerOn, readings, setPowerOn, selected, isVerified, s
         variacOn={switchOn}
         setVariacOn={setSwitchOn}
       />
-      {renderTerminals(variacTerminals)}
+      {renderTerminals(variacTerminals, highlightedTerminals)}
     </div>
 
   </section>

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-
 import defaultWalkthroughConfig from './walkthroughConfig.json'
 import { WalkthroughContext } from './WalkthroughContext.js'
 import { loadWalkthroughConfig } from './walkthroughConfigLoader.js'
@@ -10,26 +9,18 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
 
 const getElementRect = (element) => {
   if (!element) return null
-
   const rect = element.getBoundingClientRect()
-
   if (rect.width === 0 && rect.height === 0) return null
-
-  return {
-    bottom: rect.bottom,
-    height: rect.height,
-    left: rect.left,
-    right: rect.right,
-    top: rect.top,
-    width: rect.width,
-  }
+  return { bottom: rect.bottom, height: rect.height, left: rect.left, right: rect.right, top: rect.top, width: rect.width }
 }
 
 const WalkthroughProvider = ({
-  autoPlayAudio = false,
   children,
   config = defaultWalkthroughConfig,
   locale,
+  onComplete,
+  onExit,
+  isAudioEnabled
 }) => {
   const walkthroughConfig = useMemo(
     () => loadWalkthroughConfig(config, locale ?? config?.defaultLocale),
@@ -43,190 +34,139 @@ const WalkthroughProvider = ({
 
   const totalSteps = walkthroughConfig.steps.length
   const activeStep = isOpen ? walkthroughConfig.steps[currentStepIndex] : null
+  const currentStep = currentStepIndex + 1
   const activeTargetSelector = activeStep?.target
 
-  const currentStep = currentStepIndex + 1
-  const canGoPrevious = currentStepIndex > 0
-  const canGoNext = currentStepIndex < totalSteps - 1
+  const handleExit = useCallback(() => {
+    setIsOpen(false)
+    if (onExit) onExit()
+  }, [onExit])
 
-  const autoPlayAudioForStep = Boolean(
-    activeStep?.autoplayAudio ??
-    walkthroughConfig.audio?.autoplay ??
-    autoPlayAudio
-  )
-
-  const readActiveTarget = useCallback(() => {
-    if (!activeTargetSelector) {
-      setTargetRect(null)
-      return null
-    }
-
-    const target = document.querySelector(activeTargetSelector)
-    const nextRect = getElementRect(target)
-
-    setTargetRect(nextRect)
-    return target
-  }, [activeTargetSelector])
+  const handleComplete = useCallback(() => {
+    setIsOpen(false)
+    if (onComplete) onComplete()
+  }, [onComplete])
 
   const moveToStep = useCallback((stepIndex) => {
     if (totalSteps === 0) return
-
     setTargetRect(null)
     setIsPositioningTarget(true)
     setCurrentStepIndex(clamp(stepIndex, 0, totalSteps - 1))
   }, [totalSteps])
 
-  const start = useCallback((stepIndex = 0) => {
-    moveToStep(stepIndex)
-    setIsOpen(true)
-  }, [moveToStep])
-
-  const close = useCallback(() => {
-    setIsOpen(false)
-    setIsPositioningTarget(false)
-    setTargetRect(null)
-  }, [])
-
   const next = useCallback(() => {
-    moveToStep(currentStepIndex + 1)
-  }, [currentStepIndex, moveToStep])
+    if (currentStepIndex < totalSteps - 1) {
+      moveToStep(currentStepIndex + 1)
+    } else {
+      handleComplete()
+    }
+  }, [currentStepIndex, totalSteps, moveToStep, handleComplete])
 
   const previous = useCallback(() => {
     moveToStep(currentStepIndex - 1)
   }, [currentStepIndex, moveToStep])
 
-  const goToStep = useCallback((stepIndex) => {
-    moveToStep(stepIndex)
-  }, [moveToStep])
+  const start = useCallback(() => setIsOpen(true), [])
 
-  // ✅ Initial positioning (scroll to element ONCE)
+  // 🚀 FIXED: Dynamic Positioning Logic
   useEffect(() => {
-    if (!isOpen || !activeTargetSelector) return
+    if (!isOpen || !activeTargetSelector) return;
+    
+    const target = document.querySelector(activeTargetSelector);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 
-    const target = document.querySelector(activeTargetSelector)
+    let frameId;
 
-    target?.scrollIntoView({
-      behavior: 'auto',
-      block: 'center',
-      inline: 'center',
-    })
+    // This function continuously tracks the element so the spotlight 
+    // stays perfectly aligned even during scrolling, resizing, or layout shifts.
+    const trackPosition = () => {
+      const currentRect = getElementRect(target);
+      
+      setTargetRect((prevRect) => {
+        if (!prevRect && !currentRect) return prevRect;
+        if (!prevRect || !currentRect) return currentRect;
+        
+        // Only trigger a re-render if the element actually moved by more than 0.5px
+        if (
+          Math.abs(prevRect.top - currentRect.top) > 0.5 ||
+          Math.abs(prevRect.left - currentRect.left) > 0.5 ||
+          Math.abs(prevRect.width - currentRect.width) > 0.5 ||
+          Math.abs(prevRect.height - currentRect.height) > 0.5
+        ) {
+          return currentRect;
+        }
+        return prevRect;
+      });
+      
+      frameId = requestAnimationFrame(trackPosition);
+    };
 
-    let secondFrame = null
-    const frame = requestAnimationFrame(() => {
-      secondFrame = requestAnimationFrame(() => {
-        readActiveTarget()
-        setIsPositioningTarget(false)
-      })
-    })
+    trackPosition();
+    
+    // Clear the positioning flag after a tiny delay so the spotlight can render
+    const timer = setTimeout(() => setIsPositioningTarget(false), 50);
 
     return () => {
-      cancelAnimationFrame(frame)
-      if (secondFrame) cancelAnimationFrame(secondFrame)
-    }
-  }, [activeTargetSelector, isOpen, readActiveTarget])
+      cancelAnimationFrame(frameId);
+      clearTimeout(timer);
+    };
+  }, [activeTargetSelector, isOpen, currentStepIndex]);
 
-  // ✅ ONLY resize tracking (NO SCROLL TRACKING REQUIRED)
+  // 🚀 UPGRADED: Bulletproof Scroll Lock
   useEffect(() => {
-    if (!isOpen || isPositioningTarget) return
-
-    let frame = null
-
-    const refresh = () => {
-      if (frame) cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(readActiveTarget)
+    if (isOpen) {
+      // Lock both HTML and Body to prevent all scrolling
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      
+      // Prevent iOS Safari bounce/scroll
+      document.body.style.touchAction = 'none'; 
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
     }
 
-    window.addEventListener('resize', refresh)
-    window.visualViewport?.addEventListener('resize', refresh)
-
+    // Cleanup on unmount
     return () => {
-      if (frame) cancelAnimationFrame(frame)
-      window.removeEventListener('resize', refresh)
-      window.visualViewport?.removeEventListener('resize', refresh)
-    }
-  }, [isOpen, isPositioningTarget, readActiveTarget])
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isOpen]);
 
-  // 🚀 THE FIX: BULLETPROOF SCROLL LOCK 
+  // 3. Keyboard Nav
   useEffect(() => {
-    if (!isOpen) {
-      document.body.style.overflow = ''
-      document.documentElement.style.overflow = '' // Restore HTML scroll
-      return
+    const handleKeyDown = (e) => {
+      if (!isOpen) return
+      if (e.key === 'Escape') handleExit()
+      if (e.key === 'ArrowRight') next()
+      if (e.key === 'ArrowLeft') previous()
     }
-
-    // Lock BOTH html and body to guarantee no scrolling on any OS/Browser
-    document.body.style.overflow = 'hidden'
-    document.documentElement.style.overflow = 'hidden' 
-
-    return () => {
-      document.body.style.overflow = ''
-      document.documentElement.style.overflow = '' // Restore HTML scroll
-    }
-  }, [isOpen])
-
-  // ✅ Keyboard navigation
-  useEffect(() => {
-    if (!isOpen) return
-
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault()
-        close()
-        return
-      }
-
-      if (event.key === 'ArrowRight' && canGoNext) {
-        event.preventDefault()
-        next()
-        return
-      }
-
-      if (event.key === 'ArrowLeft' && canGoPrevious) {
-        event.preventDefault()
-        previous()
-      }
-    }
-
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, canGoNext, canGoPrevious, close, next, previous])
+  }, [isOpen, next, previous, handleExit])
 
   const contextValue = useMemo(() => ({
-    activeStep,
-    autoPlayAudioForStep,
-    canGoNext,
-    canGoPrevious,
-    close,
-    config: walkthroughConfig,
-    currentStep,
-    currentStepIndex,
-    experimentName: walkthroughConfig.experimentName,
-    goToStep,
-    isOpen,
-    isPositioningTarget,
-    locale: walkthroughConfig.locale,
-    next,
+    activeStep, 
+    close: handleExit, 
+    currentStep, 
+    isOpen, 
+    next, 
     previous,
-    start,
-    targetRect,
+    start, 
     totalSteps,
+    targetRect,
+    isPositioningTarget,
+    canGoNext: currentStepIndex < totalSteps - 1,
+    canGoPrevious: currentStepIndex > 0,
+    goToStep: moveToStep,
+    autoPlayAudioForStep: isAudioEnabled
   }), [
-    activeStep,
-    autoPlayAudioForStep,
-    canGoNext,
-    canGoPrevious,
-    close,
-    currentStep,
-    currentStepIndex,
-    goToStep,
-    isOpen,
-    isPositioningTarget,
-    next,
-    previous,
-    start,
-    targetRect,
-    totalSteps,
-    walkthroughConfig,
+    activeStep, currentStep, isOpen, next, previous, start, totalSteps, 
+    handleExit, targetRect, isPositioningTarget, currentStepIndex, moveToStep, isAudioEnabled
   ])
 
   return (

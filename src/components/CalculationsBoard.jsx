@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLabAlerts } from '../alerts/useLabAlerts.js'
 // 🚀 IMPORT THE ALERT AUDIO MANAGER
-import { playAlertSound } from '../utils/alertAudioManager.js'
+import { playAlertSound, stopAlertSound } from '../utils/alertAudioManager.js'
 
 // Define the acceptable min and max ranges for each input field
 const FIELD_RANGES = {
@@ -93,20 +93,39 @@ const CalculationsBoard = ({
     e.preventDefault()
 
     if (!isVerified || !powerOn || !switchOn || voltage !== 24 || observations.length === 0) {
-      showAlert({ title: 'Action Required', description: 'Please complete the circuit steps and add an observation first!', type: 'warning', icon: '⚠️', placement: 'center', duration: 3000 });
+      showAlert({ 
+        dedupeKey: `action-req-${Date.now()}`, // 🚀 Forces alert to show every time
+        title: 'Action Required', 
+        description: 'Please complete the circuit steps and add an observation first!', 
+        type: 'warning', icon: '⚠️', placement: 'center', 
+        duration: 3000 
+      });
       return;
     }
 
-    // 🚀 NEW LOGIC: Calculate empty fields and trigger exact audio
     const emptyFieldsCount = Object.values(calcValues).filter(val => val.trim() === '').length;
     
     if (emptyFieldsCount > 0) {
       if (emptyFieldsCount === 1) {
         playAlertSound('incompltOneVal');
-        showAlert({ title: 'Incomplete Calculations', description: 'Please enter the required calculated value and verify it.', type: 'warning', icon: '⚠️', placement: 'center', duration: 4500 });
+        showAlert({ 
+          dedupeKey: `inc-calc-one-${Date.now()}`, // 🚀 Forces alert to show every time
+          title: 'Incomplete Calculations', 
+          description: 'Please enter the required calculated value and verify it.', 
+          type: 'warning', icon: '⚠️', placement: 'center', 
+          duration: 4500,
+          onClose: () => stopAlertSound()
+        });
       } else {
         playAlertSound('incompltMultiVal');
-        showAlert({ title: 'Incomplete Calculations', description: 'Please enter all the calculated values and verify them.', type: 'warning', icon: '⚠️', placement: 'center', duration: 3500 });
+        showAlert({ 
+          dedupeKey: `inc-calc-multi-${Date.now()}`, // 🚀 Forces alert to show every time
+          title: 'Incomplete Calculations', 
+          description: 'Please enter all the calculated values and verify them.', 
+          type: 'warning', icon: '⚠️', placement: 'center', 
+          duration: 4500,
+          onClose: () => stopAlertSound() 
+        });
       }
       return;
     }
@@ -134,7 +153,6 @@ const CalculationsBoard = ({
     setFieldErrors(newErrors)
     setHasVerified(true)
 
-    // 🚀 NEW LOGIC: Calculate wrong fields and trigger exact audio
     const wrongFieldsCount = Object.values(newErrors).filter(err => err === true).length;
     const isResistorCorrect = !newErrors.r && calcValues.r !== '';
 
@@ -147,17 +165,36 @@ const CalculationsBoard = ({
       
       if (wrongFieldsCount === 1) {
         playAlertSound('incorrCalcOne');
-        showAlert({ title: 'Verification Failed', description: 'Verification failed. The highlighted value is incorrect. Please review your calculation and verify again.', type: 'error', icon: '❌', placement: 'center', duration: 5500 });
+        showAlert({ 
+          dedupeKey: `fail-one-${Date.now()}`, // 🚀 Forces alert to show every time
+          title: 'Verification Failed', 
+          description: 'Verification failed. The highlighted value is incorrect. Please review your calculation and verify again.', 
+          type: 'error', icon: '❌', placement: 'center', 
+          duration: 8000,
+          onClose: () => stopAlertSound()
+        });
       } else {
         playAlertSound('incorrCalcMulti');
-        showAlert({ title: 'Verification Failed', description: 'Verification failed. The highlighted values are incorrect. Please recheck your calculations and verify again.', type: 'error', icon: '❌', placement: 'center', duration: 4500 });
+        showAlert({ 
+          dedupeKey: `fail-multi-${Date.now()}`, // 🚀 Forces alert to show every time
+          title: 'Verification Failed', 
+          description: 'Verification failed. The highlighted values are incorrect. Please recheck your calculations and verify again.', 
+          type: 'error', icon: '❌', placement: 'center', 
+          duration: 8000,
+          onClose: () => stopAlertSound()
+        });
       }
     } else {
       setIsFullyVerified(true); 
-      // 🚀 THE SUCCESS AUDIO TRIGGER
       playAlertSound('afterCorrVerif');
-      showAlert({ title: 'Verification Complete', description: 'Theoretical calculations verified successfully. All entered values are correct. Your simulation is now complete. You may view the report by clicking on the generate report button.',
-         type: 'success', icon: '✅', placement: 'center', duration: 10000 });
+      showAlert({ 
+        dedupeKey: `success-${Date.now()}`, // 🚀 Forces alert to show every time
+        title: 'Verification Complete', 
+        description: 'Theoretical calculations verified successfully. All entered values are correct. Your simulation is now complete. You may view the report by clicking on the generate report button.',
+        type: 'success', icon: '✅', placement: 'center', 
+        duration: 13000,
+        onClose: () => stopAlertSound() 
+      });
     }
   }
 

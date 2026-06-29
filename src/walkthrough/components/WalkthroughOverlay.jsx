@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from 'framer-motion'
-
 import { useWalkthrough } from '../useWalkthrough.js'
 import Spotlight from './Spotlight.jsx'
 import WalkthroughPopup from './WalkthroughPopup.jsx'
@@ -7,7 +6,7 @@ import WalkthroughPopup from './WalkthroughPopup.jsx'
 const WalkthroughOverlay = () => {
   const {
     activeStep,
-    autoPlayAudioForStep,
+    autoPlayAudioForStep, // 🚀 Pulling dynamic state directly from your App.jsx AI Guide mode
     canGoNext,
     canGoPrevious,
     close,
@@ -18,7 +17,7 @@ const WalkthroughOverlay = () => {
     previous,
     targetRect,
     totalSteps,
-    goToStep // 🚀 NEW: Extracted from context
+    goToStep
   } = useWalkthrough()
 
   return (
@@ -38,7 +37,7 @@ const WalkthroughOverlay = () => {
             {!isPositioningTarget && targetRect ? (
               <WalkthroughPopup
                 activeStep={activeStep}
-                autoPlayAudio={autoPlayAudioForStep}
+                autoPlayAudio={autoPlayAudioForStep} // 🚀 Pass it directly to the Popup
                 canGoNext={canGoNext}
                 canGoPrevious={canGoPrevious}
                 currentStep={currentStep}
@@ -46,7 +45,7 @@ const WalkthroughOverlay = () => {
                 onClose={close}
                 onNext={next}
                 onPrevious={previous}
-                onSkip={() => goToStep(totalSteps - 1)} // 🚀 NEW: Passes skip logic (index is 0-based)
+                onSkip={() => goToStep(totalSteps - 1)}
                 targetRect={targetRect}
                 totalSteps={totalSteps}
               />

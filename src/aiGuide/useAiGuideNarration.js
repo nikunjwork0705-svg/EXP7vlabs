@@ -102,7 +102,12 @@ export const useAiGuideNarration = ({
   }), [guideConfig.locale])
 
   const playAudio = useCallback((audioSource) => new Promise((resolve, reject) => {
-    const audio = new Audio(audioSource)
+    
+    // 🚀 FIX: Load directly from the public/audio folder. 
+    // encodeURI ensures spaces in file names like "AI Guide click.wav" don't break the URL.
+    const audioUrl = `/audio/${encodeURI(audioSource)}`;
+    const audio = new Audio(audioUrl);
+    
     let settled = false
 
     const cleanup = () => {
@@ -126,7 +131,10 @@ export const useAiGuideNarration = ({
     }
 
     const handleEnded = () => settle(resolve)
-    const handleError = () => settle(() => reject(new Error(`Unable to play AI Guide audio: ${audioSource}`)))
+    const handleError = () => {
+       console.error(`AI Guide: Cannot find audio file at ${audioUrl}. Did you move it to the public/audio folder?`);
+       settle(() => reject(new Error(`Unable to play AI Guide audio: ${audioSource}`)))
+    }
 
     audio.addEventListener('ended', handleEnded)
     audio.addEventListener('error', handleError)
@@ -141,11 +149,12 @@ export const useAiGuideNarration = ({
     }
 
     audio.play().catch((error) => {
+      console.warn("Browser blocked AI Guide Autoplay", error);
       settle(() => reject(error))
     })
   }), [])
 
-  const playStep = useCallback(async (step) => {
+  const executeStep = useCallback(async (step) => {
     if (isConfiguredAudioSource(step.audio)) {
       try {
         await playAudio(step.audio)
@@ -159,6 +168,37 @@ export const useAiGuideNarration = ({
 
     await speakText(step.text)
   }, [playAudio, speakText])
+
+  const playStep = useCallback(async (stepId) => {
+    stop() 
+
+    const step = guideConfig.steps.find((s) => s.id === stepId)
+    
+    if (!step) {
+      console.warn(`AI Guide: Step with id ${stepId} not found in configuration.`)
+      return
+    }
+
+    const runId = runIdRef.current + 1
+    runIdRef.current = runId
+
+    setIsPlaying(true)
+    onStart?.(guideConfig)
+
+    try {
+      await executeStep(step)
+
+      if (runIdRef.current === runId) {
+        setIsPlaying(false)
+        onFinish?.(guideConfig)
+      }
+    } catch (error) {
+      if (runIdRef.current === runId) {
+        setIsPlaying(false)
+        onError?.(error)
+      }
+    }
+  }, [guideConfig, executeStep, stop, onStart, onFinish, onError])
 
   const start = useCallback(async () => {
     stop()
@@ -181,7 +221,7 @@ export const useAiGuideNarration = ({
           return
         }
 
-        await playStep(step)
+        await executeStep(step)
       }
 
       if (runIdRef.current === runId) {
@@ -194,7 +234,7 @@ export const useAiGuideNarration = ({
         onError?.(error)
       }
     }
-  }, [guideConfig, onError, onFinish, onStart, playStep, stop])
+  }, [guideConfig, onError, onFinish, onStart, executeStep, stop])
 
   useEffect(() => stop, [stop])
 
@@ -202,6 +242,7 @@ export const useAiGuideNarration = ({
     config: guideConfig,
     isPlaying,
     start,
+    playStep, 
     stop,
   }
 }

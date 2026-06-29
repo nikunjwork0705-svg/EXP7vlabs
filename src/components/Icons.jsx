@@ -84,13 +84,6 @@ export const ButtonIcon = () => (
   </svg>
 )
 
-// export const SlidersIcon = () => (
-//   <svg aria-hidden="true" viewBox="0 0 32 32">
-//     <path d="M6 10h20M6 22h20" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-//     <circle cx="12" cy="10" r="3.5" fill="currentColor" />
-//     <circle cx="20" cy="22" r="3.5" fill="currentColor" />
-//   </svg>
-// )
 export const SlidersIcon = () => (
   <svg 
     aria-hidden="true" 
