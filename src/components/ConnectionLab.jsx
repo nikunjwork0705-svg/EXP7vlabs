@@ -15,7 +15,8 @@ import {
 } from '../utils/jsPlumbWiring.js'
 
 const ConnectionLab = ({
-  highlightedTerminals = [], // 🚀 1. ACCEPT THE NEW PROP
+  isAiGuideMode, // 🚀 1. ACCEPT AI GUIDE PROP
+  highlightedTerminals = [], 
   autoConnect,
   checkRequest,
   onCheckConnections,
@@ -46,10 +47,15 @@ const ConnectionLab = ({
   const selectedRef = useRef(selected)
   const [isLocked, setIsLocked] = useState(false)
 
-  // We need to use refs for these so the jsPlumb event listener has access to the freshest values
   const autoConnectRef = useRef(autoConnect)
   const isLockedRef = useRef(isLocked)
-  const hasPlayedCompleteAudio = useRef(false) // Prevents audio spam if they keep reconnecting
+  const hasPlayedCompleteAudio = useRef(false) 
+
+  // 🚀 2. Store it in a ref so jsPlumb event listeners can access the freshest value
+  const isAiGuideModeRef = useRef(isAiGuideMode);
+  useEffect(() => {
+     isAiGuideModeRef.current = isAiGuideMode;
+  }, [isAiGuideMode]);
 
   useEffect(() => {
     onCheckConnectionsRef.current = onCheckConnections
@@ -79,7 +85,7 @@ const ConnectionLab = ({
       instanceRef.current?.reset()
       containerRef.current.classList.remove('connection-lab--locked')
       setIsLocked(false)
-      hasPlayedCompleteAudio.current = false; // Reset the audio flag
+      hasPlayedCompleteAudio.current = false; 
 
       const instance = jsPlumb.getInstance({
         Container: containerRef.current,
@@ -93,7 +99,6 @@ const ConnectionLab = ({
 
       instanceRef.current = instance
 
-      // Dynamically pass the app scale to jsPlumb
       const updateJsPlumbZoom = () => {
         if (!containerRef.current || !instanceRef.current) return;
         const scaleContainer = document.getElementById('app-scale');
@@ -122,7 +127,6 @@ const ConnectionLab = ({
       addAllEndpoints(instance)
       instance.setSuspendDrawing(false, true)
 
-      // 🚀 2. HELPER FUNCTION TO UPDATE APP.JSX STATE
       const updateConnectionsState = () => {
         const currentConns = instance.getConnections().map(conn => [
           conn.sourceId,
@@ -131,25 +135,25 @@ const ConnectionLab = ({
         setConnections(currentConns);
       };
 
-      // 🚀 3. FIRE THE HELPER EVERY TIME A WIRE IS DRAGGED
       instance.bind("connection", () => {
-        updateConnectionsState(); // Tells App.jsx a new wire was added!
+        updateConnectionsState(); 
         
-        // If there are exactly 17 connections, it's not autoconnect, it's not locked yet, and we haven't played it already
         if (
           instance.getConnections().length === 17 && 
           !autoConnectRef.current && 
           !isLockedRef.current &&
           !hasPlayedCompleteAudio.current
         ) {
-          hasPlayedCompleteAudio.current = true; // Stop it playing multiple times
-          playAlertSound('guideAllComplete');
+          hasPlayedCompleteAudio.current = true; 
+          // 🚀 3. MUTE GENERIC ALERT IF AI IS ON
+          if (!isAiGuideModeRef.current) {
+            playAlertSound('guideAllComplete');
+          }
         }
       });
 
-      // 🚀 4. FIRE THE HELPER EVERY TIME A WIRE IS REMOVED
       instance.bind("connectionDetached", () => {
-         updateConnectionsState(); // Tells App.jsx a wire was removed!
+         updateConnectionsState(); 
          
          if (instance.getConnections().length < 17) {
             hasPlayedCompleteAudio.current = false;
@@ -234,7 +238,7 @@ const ConnectionLab = ({
  return (
     <div className="connection-lab" onClick={handleLabelClick} ref={containerRef}>
       <EquipmentPanel
-        highlightedTerminals={highlightedTerminals} // 🚀 5. PASS IT DOWN TO YOUR DOM ELEMENTS
+        highlightedTerminals={highlightedTerminals} 
         powerOn={powerOn}
         readings={readings}
         setPowerOn={setPowerOn}

@@ -90,9 +90,9 @@ const App = () => {
   const readingCount = observations.length;
   const sessionStart = useMemo(() => new Date().toISOString(), []);
 
-  // 🚀 AI GUIDE REACTIVE STATE
   const [isAiGuideMode, setIsAiGuideMode] = useState(false);
   const lastPlayedStepRef = useRef(null); 
+  const [lastCompletedStep, setLastCompletedStep] = useState(null);
 
   const nextMissingConnectionIndex = useMemo(() => {
     const isSameConnection = (c1, c2) => {
@@ -116,18 +116,20 @@ const App = () => {
   const { isPlaying: isAiAudioPlaying, playStep, stop: stopAiGuide } = useAiGuideNarration({
     onError: () => setStatus('AI Guide narration could not start.'), 
     onStart: () => setStatus('AI Guide narration started.'), 
-    onFinish: () => setStatus('AI Guide narration completed.') 
+    onFinish: () => {
+      setStatus('AI Guide narration completed.');
+      setLastCompletedStep(lastPlayedStepRef.current);
+    } 
   });
 
-  // 🚀 THE FIX: A centralized function that aggressively kills old audio before starting new audio
   const triggerAiGuideStepRef = useRef(null);
   triggerAiGuideStepRef.current = (step) => {
     if (!isAiGuideMode || !playStep) return;
     
-    // Stop the AI Guide hook audio
     stopAiGuide(); 
+    stopAlertSound(); 
+    setLastCompletedStep(null); 
     
-    // Tiny delay ensures the browser flushes the old audio buffer before starting the new one
     setTimeout(() => {
       playStep(step);
       lastPlayedStepRef.current = step;
@@ -135,7 +137,6 @@ const App = () => {
   };
 
   const handleAiGuide = useCallback(() => {
-    // 🚀 NEW: Shout to the Walkthrough popup to stop its audio!
     window.dispatchEvent(new CustomEvent('force-stop-walkthrough'));
 
     if (isAiGuideMode) {
@@ -152,20 +153,17 @@ const App = () => {
     }
   }, [isAiGuideMode, stopAiGuide, currentStep, playStep]);
 
-  // 🚀 NEW: If the Walkthrough popup opens, instantly kill the AI Guide
-// 🚀 NEW: If the Walkthrough popup opens, instantly kill the AI Guide audio
-  // BUT keep AI Mode ON so the Walkthrough knows it's allowed to autoplay!
   useEffect(() => {
     const handleStopAiGuide = () => {
-      // ❌ REMOVED: setIsAiGuideMode(false); 
-      stopAiGuide(); // Just kill the audio so they don't overlap
+      stopAiGuide();
+      // 🚀 THE FIX: We completely REMOVED "lastPlayedStepRef.current = null" from here!
+      // This stops the audio dead in its tracks but prevents the observer from accidentally restarting it.
     };
     
     window.addEventListener('force-stop-ai-guide', handleStopAiGuide);
     return () => window.removeEventListener('force-stop-ai-guide', handleStopAiGuide);
   }, [stopAiGuide]);
 
-  // 🚀 AI GUIDE: THE REACTIVE OBSERVER
   useEffect(() => {
     if (!isAiGuideMode || !playStep) return;
     let stepToPlay = null;
@@ -173,19 +171,22 @@ const App = () => {
     if (currentStep === 1 && lastPlayedStepRef.current !== 1) {
       stepToPlay = 1;
     }
-    else if (currentStep === 2 && connections.length === 0 && lastPlayedStepRef.current !== 2 && lastPlayedStepRef.current !== 3 && lastPlayedStepRef.current !== 24) {
-      stepToPlay = 2; 
-    }
-    else if (currentStep === 2 && connections.length === 0 && lastPlayedStepRef.current === 2 && !isAiAudioPlaying) {
-      stepToPlay = 3;
-    }
     else if (currentStep === 2 && !autoConnect) {
-      if (nextMissingConnectionIndex !== -1) {
+      if (connections.length === 0) {
+        if (lastPlayedStepRef.current !== 2 && lastPlayedStepRef.current !== 3 && lastPlayedStepRef.current !== 24) {
+          stepToPlay = 2; 
+        } 
+        else if (lastCompletedStep === 2) {
+          stepToPlay = 3; 
+        }
+      } 
+      else if (nextMissingConnectionIndex !== -1) {
         const targetStep = nextMissingConnectionIndex + 3;
         if (lastPlayedStepRef.current !== targetStep) {
           stepToPlay = targetStep;
         }
-      } else if (nextMissingConnectionIndex === -1 && lastPlayedStepRef.current !== 20) {
+      } 
+      else if (nextMissingConnectionIndex === -1 && lastPlayedStepRef.current !== 20) {
         stepToPlay = 20; 
       }
     }
@@ -197,10 +198,9 @@ const App = () => {
     }
 
     if (stepToPlay !== null && lastPlayedStepRef.current !== stepToPlay) {
-      // 🚀 Use the new strict function here
       triggerAiGuideStepRef.current(stepToPlay);
     }
-  }, [isAiGuideMode, playStep, currentStep, connections, isAiAudioPlaying, autoConnect, nextMissingConnectionIndex]); 
+  }, [isAiGuideMode, playStep, currentStep, connections, isAiAudioPlaying, autoConnect, nextMissingConnectionIndex, lastCompletedStep]); 
 
   // VOLTAGE EFFECT
   useEffect(() => {
@@ -208,11 +208,10 @@ const App = () => {
       hasAlerted24V.current = true;
       setCurrentStep(6);
       
-      // 🚀 Use the new strict function here
       triggerAiGuideStepRef.current(30);
 
       setTimeout(() => {
-        playAlertSound('afterVolSet');
+        if (!isAiGuideMode) playAlertSound('afterVolSet');
         showAlert({ 
           title: 'Voltage Reached', 
           description: 'The voltage has been set to 24 V to ensure safe operation of the RLC circuit experiment. The readings are now displayed on the voltmeter, ammeter, and wattmeter. Now, click on the Add button to add the readings to the observation table.',
@@ -231,10 +230,9 @@ const App = () => {
 
   const recordObservation = (source) => {
     if (observations.length >= 1) {
-      // 🚀 Use the new strict function here
       triggerAiGuideStepRef.current(32);
       
-      playAlertSound('afterReadAddClick');
+      if (!isAiGuideMode) playAlertSound('afterReadAddClick');
       showAlert({ 
         title: 'Already Added', description: 'The readings are already added to the table. Calculate the required circuit parameters and click the verify button to verify them.', type: 'info', icon: 'ℹ️', placement: 'center', duration: 8200, onClose: () => stopAlertSound()
       });
@@ -254,12 +252,11 @@ const App = () => {
 
     setCurrentStep(7);
 
-    // 🚀 Use the new strict function here
     triggerAiGuideStepRef.current(31);
     
-    playAlertSound('firstReadAdded');
+    if (!isAiGuideMode) playAlertSound('firstReadAdded');
     showAlert({ 
-      title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.', type: 'success', icon: '📊', placement: 'top-right', duration: 15000, onClose: () => stopAlertSound()
+      title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.', type: 'success', icon: '📊', placement: 'top-right', duration: 18000, onClose: () => stopAlertSound()
     });
   }
 
@@ -276,17 +273,16 @@ const App = () => {
     clearAlerts();
     setCurrentStep(1);
     
-    // 🚀 Use the new strict function here
     triggerAiGuideStepRef.current(39);
     
-    playAlertSound('reset');
+    if (!isAiGuideMode) playAlertSound('reset');
     
     const executeReset = () => {
       stopAlertSound();
       window.location.reload(); 
     };
 
-    showAlert({ title: 'Simulation Reset', description: 'The Simulation has been RESET. You can start again.', type: 'info', icon: '🔄', placement: 'center', duration: 5000, onClose: executeReset });
+    showAlert({ title: 'Simulation Reset', description: 'The Simulation has been RESET. You can start again.', type: 'info', icon: '🔄', placement: 'center', duration: 4000, onClose: executeReset });
   }
 
   const handleCalculate = () => {
@@ -306,12 +302,11 @@ const App = () => {
   }
 
   const handlePrint = () => {
-    // 🚀 Use the new strict function here
     triggerAiGuideStepRef.current(40);
     
-    playAlertSound('print');
+    if (!isAiGuideMode) playAlertSound('print');
     const executePrint = () => { stopAlertSound(); setTimeout(() => { window.print(); }, 100); };
-    showAlert({ title: 'Printing', description: 'Opening the Print dialog.', type: 'info', icon: '🖨️', placement: 'center', duration: 5000, onClose: executePrint });
+    showAlert({ title: 'Printing', description: 'Opening the Print dialog.', type: 'info', icon: '🖨️', placement: 'center', duration: 2000, onClose: executePrint });
   }
 
   const handleGenerateReport = () => {
@@ -326,10 +321,9 @@ const App = () => {
       return
     }
 
-    // 🚀 Use the new strict function here
     triggerAiGuideStepRef.current(38);
     
-    playAlertSound('genRepBtnClick');
+    if (!isAiGuideMode) playAlertSound('genRepBtnClick');
 
     const executeGenerate = () => {
       stopAlertSound();
@@ -344,11 +338,10 @@ const App = () => {
     setAutoConnect(true); setConnectionsVerified(false); setCurrentStep(2);
     setStatus('Default connections added using jsPlumb. Click CHECK to validate and lock the circuit.')
     
-    // 🚀 Use the new strict function here
     triggerAiGuideStepRef.current(24);
 
     setTimeout(() => { 
-      playAlertSound('autoConnect');
+      if (!isAiGuideMode) playAlertSound('autoConnect');
       showAlert({ title: 'Autoconnect Completed', description: 'Autoconnect Completed. Click on the CHECK button to verify the connections.', type: 'info', icon: '🔌', duration: 5000, onClose: () => stopAlertSound() }) 
     }, 150);
   }
@@ -361,10 +354,9 @@ const App = () => {
 
     if (currentConns.length === 0) {
       setConnectionsVerified(false);
-      // 🚀 Use the new strict function here
       triggerAiGuideStepRef.current(23);
       
-      playAlertSound('firstCheck');
+      if (!isAiGuideMode) playAlertSound('firstCheck');
       showAlert({ title: 'Alert', description: 'Please make the required connections as per the given instructions.', type: 'warning', icon: '⚠️', placement: 'center', dedupeKey: 'no-connections-error', duration: 6000, onClose: () => stopAlertSound() });
       return; 
     }
@@ -391,21 +383,18 @@ const App = () => {
     if (wrongConnections.length === 0 && missingConnections.length === 0) {
       setConnectionsVerified(true); setCurrentStep(3); setStatus('Right connections. Now, turn ON the MCB.');
       
-      // 🚀 Use the new strict function here
       triggerAiGuideStepRef.current(27);
       
-      playAlertSound('forCorrConnCheckClick');
+      if (!isAiGuideMode) playAlertSound('forCorrConnCheckClick');
       showAlert({ title: 'Connections Verified', description: 'Connections Verified successfully. Now turn ON the MCB by clicking the MCB lever.', type: 'success', icon: '✅', placement: 'center', duration: 7000, onClose: () => stopAlertSound() });
     } else {
       setConnectionsVerified(false);
       if (wrongConnections.length === 1) {
-        // 🚀 Use the new strict function here
         triggerAiGuideStepRef.current(21);
-        playAlertSound('wrongConn');
+        if (!isAiGuideMode) playAlertSound('wrongConn');
       } else if (wrongConnections.length > 1) {
-        // 🚀 Use the new strict function here
         triggerAiGuideStepRef.current(22);
-        playAlertSound('multiWrong');
+        if (!isAiGuideMode) playAlertSound('multiWrong');
       }
 
       let wrongText = ''; let missingText = '';
@@ -475,6 +464,7 @@ const App = () => {
 
                 <section className="right-panel">
                   <ConnectionLab
+                    isAiGuideMode={isAiGuideMode} 
                     highlightedTerminals={highlightedTerminals} 
                     autoConnect={autoConnect}
                     checkRequest={checkRequest}
@@ -514,7 +504,6 @@ const App = () => {
                   setIsAllCalculationsVerified(allCorrect);
                   if (allCorrect) { 
                     setVerifiedCalcValues(values); 
-                    // 🚀 Use the new strict function here
                     triggerAiGuideStepRef.current(33);
                   }
                 }}
