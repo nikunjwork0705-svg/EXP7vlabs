@@ -93,6 +93,9 @@ const App = () => {
   const [isAiGuideMode, setIsAiGuideMode] = useState(false);
   const lastPlayedStepRef = useRef(null); 
   const [lastCompletedStep, setLastCompletedStep] = useState(null);
+  
+  // 🚀 NEW STATE: Tracks the 6-second decision pause
+  const [isWaitingForStep3, setIsWaitingForStep3] = useState(false); 
 
   const nextMissingConnectionIndex = useMemo(() => {
     const isSameConnection = (c1, c2) => {
@@ -156,14 +159,26 @@ const App = () => {
   useEffect(() => {
     const handleStopAiGuide = () => {
       stopAiGuide();
-      // 🚀 THE FIX: We completely REMOVED "lastPlayedStepRef.current = null" from here!
-      // This stops the audio dead in its tracks but prevents the observer from accidentally restarting it.
     };
     
     window.addEventListener('force-stop-ai-guide', handleStopAiGuide);
     return () => window.removeEventListener('force-stop-ai-guide', handleStopAiGuide);
   }, [stopAiGuide]);
 
+  // 🚀 NEW EFFECT: A 6-second decision timer after Step 2 finishes
+  useEffect(() => {
+    if (lastCompletedStep === 2 && !autoConnect && connections.length === 0 && isAiGuideMode) {
+      const timer = setTimeout(() => {
+        setIsWaitingForStep3(true);
+      }, 100000); 
+      return () => clearTimeout(timer); // If they click AutoConnect or connect a wire, this cancels the timer!
+    } else {
+      setIsWaitingForStep3(false);
+    }
+  }, [lastCompletedStep, autoConnect, connections.length, isAiGuideMode]);
+
+
+  // AI GUIDE: THE REACTIVE OBSERVER
   useEffect(() => {
     if (!isAiGuideMode || !playStep) return;
     let stepToPlay = null;
@@ -176,7 +191,8 @@ const App = () => {
         if (lastPlayedStepRef.current !== 2 && lastPlayedStepRef.current !== 3 && lastPlayedStepRef.current !== 24) {
           stepToPlay = 2; 
         } 
-        else if (lastCompletedStep === 2) {
+        // 🚀 THE FIX: Only play Step 3 if the 6-second timer has finished!
+        else if (isWaitingForStep3 && lastPlayedStepRef.current !== 3) {
           stepToPlay = 3; 
         }
       } 
@@ -200,7 +216,7 @@ const App = () => {
     if (stepToPlay !== null && lastPlayedStepRef.current !== stepToPlay) {
       triggerAiGuideStepRef.current(stepToPlay);
     }
-  }, [isAiGuideMode, playStep, currentStep, connections, isAiAudioPlaying, autoConnect, nextMissingConnectionIndex, lastCompletedStep]); 
+  }, [isAiGuideMode, playStep, currentStep, connections, isAiAudioPlaying, autoConnect, nextMissingConnectionIndex, isWaitingForStep3]); 
 
   // VOLTAGE EFFECT
   useEffect(() => {
@@ -256,7 +272,7 @@ const App = () => {
     
     if (!isAiGuideMode) playAlertSound('firstReadAdded');
     showAlert({ 
-      title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.', type: 'success', icon: '📊', placement: 'top-right', duration: 18000, onClose: () => stopAlertSound()
+      title: 'Success', description: 'Readings added successfully. Now, calculate the required circuit parameters using the measured readings and the provided formulas. Once you have entered the calculated values, click the Verify button to compare your calculated values with the evaluated values.', type: 'success', icon: '📊', placement: 'top-right', duration: 15000, onClose: () => stopAlertSound()
     });
   }
 
@@ -282,7 +298,7 @@ const App = () => {
       window.location.reload(); 
     };
 
-    showAlert({ title: 'Simulation Reset', description: 'The Simulation has been RESET. You can start again.', type: 'info', icon: '🔄', placement: 'center', duration: 4000, onClose: executeReset });
+    showAlert({ title: 'Simulation Reset', description: 'The Simulation has been RESET. You can start again.', type: 'info', icon: '🔄', placement: 'center', duration: 5000, onClose: executeReset });
   }
 
   const handleCalculate = () => {
@@ -306,7 +322,7 @@ const App = () => {
     
     if (!isAiGuideMode) playAlertSound('print');
     const executePrint = () => { stopAlertSound(); setTimeout(() => { window.print(); }, 100); };
-    showAlert({ title: 'Printing', description: 'Opening the Print dialog.', type: 'info', icon: '🖨️', placement: 'center', duration: 2000, onClose: executePrint });
+    showAlert({ title: 'Printing', description: 'Opening the Print dialog.', type: 'info', icon: '🖨️', placement: 'center', duration: 5000, onClose: executePrint });
   }
 
   const handleGenerateReport = () => {
